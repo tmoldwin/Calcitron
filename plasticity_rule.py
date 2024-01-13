@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import SymLogNorm, ListedColormap
 import constants
 import pandas as pd
+import param_helpers as ph
 
 canonical_delay_dur = 5
 canonical_stim_dur = 30
@@ -111,6 +112,7 @@ class Plasticity_Rule:
             df.loc[0, self.theta_names[i]] = self.thetas[i]
             df.loc[0, self.fp_names[i]] = self.fps[i+1]
             df.loc[0, self.eta_names[i]] = self.etas[i+1]
+        df.columns = ph.latex_to_unicode(df.columns)
         return df
 
 

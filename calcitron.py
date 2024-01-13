@@ -9,7 +9,7 @@ from matplotlib.gridspec import GridSpec
 import supervisors
 import supervisors as sprv
 import plot_helpers as ph
-
+import param_helpers as pah
 #plt.rc('xtick', labelsize=6)  # fontsize of the tick labels
 
 cmap = mpl.cm.get_cmap('Wistia')
@@ -27,6 +27,19 @@ class Calcitron:
         self.activation_function = activation_function
         self.bias = bias
         self.supervisor = supervisor
+        self.N = None
+
+    def to_pandas(self):
+        df = self.plasticity_rule.to_pandas()
+        df['alpha'] = self.alpha
+        df['beta'] = self.beta
+        df['gamma'] = self.gamma
+        df['delta'] = self.delta
+        df['b'] = self.bias
+        df['N'] = self.N
+        df['activation'] = self.activation_function
+        df.columns = pah.latex_to_unicode(df.columns)
+        return df
 
     def __str__(self):
         return (f"Plasticity rule: {str(self.plasticity_rule)}\n"

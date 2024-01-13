@@ -7,10 +7,10 @@ def latex_to_unicode(latex_list):
         r'\theta_{P}': 'θₚ',
         r'\F_{P}': 'Fₚ',
         r'\eta_{P}': 'ηₚ',
-        r'\alpha': 'α',
-        r'\beta': 'β',
-        r'\gamma': 'γ',
-        r'\delta': 'δ'
+        'alpha': 'α',
+        'beta': 'β',
+        'gamma': 'γ',
+        'delta': 'δ'
     }
 
     # Replace LaTeX symbols with Unicode in each string in the list
@@ -18,6 +18,7 @@ def latex_to_unicode(latex_list):
     for latex_str in latex_list:
         for latex, unicode in latex_to_unicode_dict.items():
             latex_str = latex_str.replace(latex, unicode)
+            latex_str = latex_str.replace('$', '')
         unicode_list.append(latex_str)
 
     return unicode_list
