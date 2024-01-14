@@ -5,7 +5,7 @@ import six
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
 from matplotlib.gridspec import GridSpec
-
+import pandas as pd
 import supervisors
 import supervisors as sprv
 import plot_helpers as ph
@@ -30,14 +30,19 @@ class Calcitron:
         self.N = None
 
     def to_pandas(self):
-        df = self.plasticity_rule.to_pandas()
-        df['alpha'] = self.alpha
-        df['beta'] = self.beta
-        df['gamma'] = self.gamma
-        df['delta'] = self.delta
-        df['b'] = self.bias
-        df['N'] = self.N
+        # Use the to_pandas function from paramfunction file for coeffs
+        df_coeffs = pah.coeffs_to_pandas(self.coeffs)
+        # Get the plasticity rule DataFrame
+        df_plasticity_rule = self.plasticity_rule.to_pandas()
+        # Get the supervisor DataFrame
+        df_supervisor = self.supervisor.to_pandas()
+        # Concatenate all DataFrames
+        df = pd.concat([df_coeffs, df_plasticity_rule, df_supervisor], axis=1)
+        df['bias'] = self.bias
         df['activation'] = self.activation_function
+        df['N'] = self.N
+        # Add the activation function
+        # Convert column names to Unicode
         df.columns = pah.latex_to_unicode(df.columns)
         return df
 

@@ -78,6 +78,7 @@ for ax in list(results_axes.values()):
 # results_axes['output'].set_ylim([0.9*min(y_hat), 1.1*max(y_hat)])
 
 ph.label_panels(fig, labels=['A', 'B', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6'], size=12)
-plt.savefig(constants.PLOT_FOLDER + '5.svg', dpi=fig.dpi)
-plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig5.tiff', dpi = fig.dpi)
+# plt.savefig(constants.PLOT_FOLDER + '5.svg', dpi=fig.dpi)
+# plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig5.tiff', dpi = fig.dpi)
 plt.show()
+

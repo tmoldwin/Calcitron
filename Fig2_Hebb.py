@@ -6,6 +6,7 @@ import plot_helpers as ph
 import rule_comparison_grid as rcg
 from calcitron import Calcitron
 import constants
+import param_helpers
 
 #plt.rc('xtick', labelsize=12)  # fontsize of the tick labels
 
@@ -40,6 +41,7 @@ bar_matrix = [alpha_vector, gamma_vector]
 all_bar_mats = [bar_matrix, bar_matrix, bar_matrix, bar_matrix]
 all_bar_titles = [x_barplot,x_barplot,x_barplot,x_barplot]
 
+
 fig, results_subplots, bar_subplots = \
     rcg.rule_comparison_grid(calcitrons, titles, all_bar_mats, all_bar_titles, all_local_inputs, coeffs_to_use=[0, 2], plot_cbar = [3])
 print(bar_subplots)
@@ -49,9 +51,11 @@ labels = np.array([[letter + str(j) for letter in letters] for j in range(1,5)])
 ph.label_panels(fig, labels = labels)
 # plt.savefig(constants.PLOT_FOLDER + '2.svg', dpi=fig.dpi)
 # plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig2.tiff', dpi = fig.dpi)
-# plt.show()
+plt.show()
 
-print(calcitrons[0].to_pandas())
+param_helpers.fig_params(calcitrons, titles, 2)
+
+
 
 
 

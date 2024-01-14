@@ -2,6 +2,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 import constants
+import param_helpers
+from calcitron import Calcitron
 from calcitron_calcium_bar_charts import calcium_barplot
 import plot_helpers as ph
 from plasticity_rule import Plasticity_Rule as PR
@@ -47,12 +49,14 @@ eta = 1
 def rules_from_dict(dicts):
     rules = []
     coeffs = []
+    calcitrons = []
     for d in dicts:
         regions = [Region('N', (-np.inf, d['theta_D']), 0.5, 0),
                    Region('D', (d['theta_D'], d['theta_P']), 0, eta),
                    Region('P', (d['theta_P'], np.inf), 1, eta)]
         rules.append(PR(regions))
         coeffs.append([d['alpha'], 0, d['gamma'],0])
+        calcitrons.append(Calcitron(coeffs[-1], rules[-1]))
     return rules, coeffs
 
 rules, coeffs = rules_from_dict(dicts)
@@ -87,6 +91,14 @@ fig.delaxes(unravelled_axes[-2])
 ax.legend(bbox_to_anchor=(1.1, 1.05))
 #ph.share_axes(axes,'both','both',1,1,0,1)
 plt.tight_layout()
-plt.savefig(constants.PLOT_FOLDER + '3.svg', dpi=fig.dpi)
-plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig3.tiff', dpi = fig.dpi)
+# plt.savefig(constants.PLOT_FOLDER + '3.svg', dpi=fig.dpi)
+# plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig3.tiff', dpi = fig.dpi)
 #plt.show()
+
+def panel_to_position(panel_number):
+    # Subtract 1 from the panel_number to start indexing from 0
+    row = panel_number // 4 + 1
+    col = panel_number % 4 + 1
+    return f'row {row} col {col}'
+
+param_helpers.fig_params(rules, [panel_to_position(i) for i in range(len(rules))], 3, coeffs = coeffs)

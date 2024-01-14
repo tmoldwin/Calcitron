@@ -1,7 +1,10 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.gridspec import GridSpec
+
+import calcitron
 import constants
+import param_helpers
 from calcitron_calcium_bar_charts import calcium_barplot
 from matplotlib.colors import ListedColormap
 import plot_helpers as ph
@@ -36,6 +39,7 @@ x_barplot = [r"$\mathregular{x_{i}}$" + "=1", r"$\mathregular{x_{i}}$" + "=2",
 alpha_vector = np.array([1,2,3,0,0,0,1,2,1])
 gamma_vector = np.array([0,0,0,1,2,3,1,1,3])
 bar_matrix = [alpha_vector, gamma_vector]
+
 eta = 0.1
 frequency_dep = {'alpha': 0.3, 'gamma': 0.3,'theta_d': 0.5, 'theta_p': 0.8}
 rule = pr.Plasticity_Rule(regions=[Region('N', (-np.inf, 0.5), 0.5, 0),
@@ -64,6 +68,7 @@ def frequency_dep_imshow(alpha, gamma, x_array, y_hat_array, theta_d = 0.5, thet
 
 x = np.array(np.arange(0, 4.001, 0.01))
 y_hat = np.array(np.arange(0, 4.001, 0.01))
+
 frequency_dep_imshow(0.3, 0.0, x, y_hat, ax = hm_subplots[0])
 frequency_dep_imshow(0.3, 0.15, x, y_hat, ax = hm_subplots[1])
 frequency_dep_imshow(0.3, 0.3, x, y_hat, ax=hm_subplots[2])
@@ -73,6 +78,11 @@ im = frequency_dep_imshow(0, 0.3, x, y_hat, ax=hm_subplots[4])
 cbar = plt.colorbar(im, label='Plasticity', ax=hm_subplots[-1], fraction=0.046, pad=0.04)
 cbar.set_ticks(np.arange(3), labels=['N', 'D', 'P'])
 ph.label_panels(fig, labels = ['A','B1','B2','B3','B4','B5'], size = 12)
-plt.savefig(constants.PLOT_FOLDER + '4.svg', dpi=fig.dpi)
-plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig4.tiff', dpi = fig.dpi)
-plt.show()
+# plt.savefig(constants.PLOT_FOLDER + '4.svg', dpi=fig.dpi)
+# plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig4.tiff', dpi = fig.dpi)
+#plt.show()
+
+panel_labels = ['A','B1','B2','B3','B4','B5']
+#first A then the examples
+coeffs_mat = [[0.3,0,0.3,0], [0.3,0,0,0], [0.3,0,0.15,0],[0.3,0,0.3,0],[0.15,0,0.3,0],[0,0,0.3,0]]
+param_helpers.fig_params([rule for i in range(len(panel_labels))], panel_labels, 4, coeffs = coeffs_mat)

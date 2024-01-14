@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 
 import constants
+import param_helpers
 import pattern_generators as pg
 import numpy as np
 import supervisors as sprvs
@@ -84,4 +85,6 @@ np.array(results_subplots)[5][1].set_xlabel('label\npattern #')
 letters = ['B','D']
 labels = np.array([[letter + str(j) for letter in letters] for j in range(1,8)]).ravel()
 ph.label_panels(fig, labels = labels, size = 8)
-plt.savefig(constants.PLOT_FOLDER + '8.svg', dpi=fig.dpi)
+# plt.savefig(constants.PLOT_FOLDER + '8.svg', dpi=fig.dpi)
+
+param_helpers.fig_params(calcitrons, titles, 8)

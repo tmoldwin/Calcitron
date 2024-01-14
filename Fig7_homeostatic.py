@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 import constants
+import param_helpers
 import pattern_generators as pg
 from calcitron import Calcitron
 import supervisors as cs
@@ -96,5 +97,7 @@ fig.axes[0].legend(bbox_to_anchor = (-0.1, 1.1))
 letters = ['B','C','E','F']
 labels = np.array([[letter + str(j) for letter in letters] for j in range(1,8)]).ravel()
 ph.label_panels(fig, labels = labels, size = 8)
-plt.savefig(constants.PLOT_FOLDER + '7.svg', dpi=fig.dpi)
+# plt.savefig(constants.PLOT_FOLDER + '7.svg', dpi=fig.dpi)
 plt.show()
+
+param_helpers.fig_params(calcitrons, rule_names, 7)

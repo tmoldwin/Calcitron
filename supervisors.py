@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 def make_label_map(X,y):
     X = np.atleast_2d(X)
@@ -7,6 +8,10 @@ def make_label_map(X,y):
 
 class Supervisor:
     def __init__(self):
+        self.Z_p = 0
+        self.Z_d = 0
+        self.Z = 0
+        self.eta_b = 0
         pass
 
     def supervise(self, pattern_index, pattern, y_hat_binary, y_hat):
@@ -15,8 +20,27 @@ class Supervisor:
     def delta_bias(self, pattern, pattern_index, y_hat_binary, y_hat):
         return 0
 
+    def to_pandas(self):
+        # Create a dictionary of the values
+        data = {
+            'Z_p': self.Z_p,
+            'Z_d': self.Z_d,
+            'Z': self.Z,
+            'eta_b': self.eta_b
+        }
+
+        # Remove zero values
+        data = {k: v for k, v in data.items() if v != 0}
+
+        # Convert to DataFrame
+        df = pd.DataFrame(data, index=[0])
+
+        return df
+
 
 class null_supervisor(Supervisor):
+    def __init__(self):
+        super().__init__()
     def supervise(self, pattern_index, pattern, y_hat_binary, y_hat):
         if y_hat_binary == 1:
             label = 'TP'
@@ -25,11 +49,12 @@ class null_supervisor(Supervisor):
 
 class signal_noise_supervisor(Supervisor):
     def __init__(self, signals):
+        super().__init__()
         self.signals = np.atleast_2d(signals)
+        self.Z = 0
 
     def supervise(self, pattern_index, pattern, y_hat_binary, y_hat):
         target = np.any(np.all(pattern == self.signals, axis=1))
-        Z = 0
         if y_hat_binary == 1:
             if target:
                 label = 'TP'
@@ -40,11 +65,13 @@ class signal_noise_supervisor(Supervisor):
                 label = 'FN'
             else:
                 label = 'TN'
-        return Z, label
+        return self.Z, label
 
 class one_shot_flip_flop_supervisor(Supervisor):
     def __init__(self, y):
+        super().__init__()
         self.y = y
+        self.Z = 1
 
     def supervise(self, pattern_index, pattern, y_hat_binary, y_hat):
         if y_hat_binary == 1:
@@ -55,8 +82,9 @@ class one_shot_flip_flop_supervisor(Supervisor):
 
 class target_perceptron_supervisor(Supervisor):
     def __init__(self, Zp = 0.3, X = None, y = None, eta_b = 0.1):
+        super().__init__()
         self.eta_b = eta_b
-        self.Zp = Zp
+        self.Z_p = Zp
         if not X is None:
             self.label_map = make_label_map(X, y)
 
@@ -72,13 +100,14 @@ class target_perceptron_supervisor(Supervisor):
                     label = 'FN'
                 else:
                     label = 'TN'
-        return target*self.Zp, label
+        return target*self.Z_p, label
 
     def delta_bias(self, pattern_index, pattern, y_hat_binary, y_hat):
         return self.eta_b*(self.label_map[tuple(pattern)]-y_hat_binary)
 
 class critic_perceptron_supervisor(Supervisor):
     def __init__(self, Z_d = 0.2, Z_p = 0.5, X = None, y = None, eta_b=0.1):
+        super().__init__()
         self.Z_d = Z_d
         self.Z_p = Z_p
         self.eta_b = eta_b
@@ -107,6 +136,7 @@ class critic_perceptron_supervisor(Supervisor):
 
 class homeostatic_supervisorPD(Supervisor):
     def __init__(self, min_target, max_target, Z_d, Z_p):
+        super().__init__()
         self.min_target = min_target
         self.max_target = max_target
         self.Z_d = Z_d
