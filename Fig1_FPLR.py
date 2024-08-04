@@ -21,7 +21,7 @@ regions_linear = [Region('N', (-np.inf, 0.5), np.nan, 0),
 Linear = Plasticity_Rule(regions_linear, rule='linear')
 FPLR = Plasticity_Rule(regions_FPLR, rule = 'FPLR')
 
-param_helpers.fig_params([Linear, FPLR], ['Linear', 'FPLR'], 1)
+param_helpers.fig_params([Linear, FPLR], ['E-G', 'H-L'], 1)
 
 #plotting
 # mosaic = [['D', 'D', 'E', 'F', 'G'], ['H', 'I', 'J', 'K', 'L']]

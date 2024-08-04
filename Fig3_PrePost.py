@@ -93,12 +93,12 @@ ax.legend(bbox_to_anchor=(1.1, 1.05))
 plt.tight_layout()
 # plt.savefig(constants.PLOT_FOLDER + '3.svg', dpi=fig.dpi)
 # plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig3.tiff', dpi = fig.dpi)
-#plt.show()
+plt.show()
 
 def panel_to_position(panel_number):
     # Subtract 1 from the panel_number to start indexing from 0
     row = panel_number // 4 + 1
     col = panel_number % 4 + 1
-    return f'row {row} col {col}'
+    return f'{row},{col}'
 
 param_helpers.fig_params(rules, [panel_to_position(i) for i in range(len(rules))], 3, coeffs = coeffs)

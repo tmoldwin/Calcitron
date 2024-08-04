@@ -53,7 +53,8 @@ ph.label_panels(fig, labels = labels)
 # plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig2.tiff', dpi = fig.dpi)
 plt.show()
 
-param_helpers.fig_params(calcitrons, titles, 2)
+rule_titles = ['A1-F1', 'A2-F2', 'A3-F3', 'A4-F4']
+param_helpers.fig_params(calcitrons, rule_titles, 2)
 
 
 

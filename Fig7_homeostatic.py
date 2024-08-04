@@ -10,7 +10,7 @@ from plasticity_rule import Region
 import rule_comparison_grid as rcg
 import plot_helpers as ph
 
-plt.rc('legend', fontsize=6)
+plt.rc('legend', fontsize=8)
 
 eps = 0.05
 num_rules = 4
@@ -100,4 +100,4 @@ ph.label_panels(fig, labels = labels, size = 8)
 # plt.savefig(constants.PLOT_FOLDER + '7.svg', dpi=fig.dpi)
 plt.show()
 
-param_helpers.fig_params(calcitrons, rule_names, 7)
+param_helpers.fig_params(calcitrons, letters, 7)

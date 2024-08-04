@@ -87,4 +87,5 @@ labels = np.array([[letter + str(j) for letter in letters] for j in range(1,8)])
 ph.label_panels(fig, labels = labels, size = 8)
 # plt.savefig(constants.PLOT_FOLDER + '8.svg', dpi=fig.dpi)
 
-param_helpers.fig_params(calcitrons, titles, 8)
+
+param_helpers.fig_params(calcitrons, ['B','D'], 8)

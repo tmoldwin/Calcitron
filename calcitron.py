@@ -38,8 +38,8 @@ class Calcitron:
         df_supervisor = self.supervisor.to_pandas()
         # Concatenate all DataFrames
         df = pd.concat([df_coeffs, df_plasticity_rule, df_supervisor], axis=1)
-        df['bias'] = self.bias
-        df['activation'] = self.activation_function
+        df['b'] = round(self.bias,2)
+        df['g'] = self.activation_function
         df['N'] = self.N
         # Add the activation function
         # Convert column names to Unicode

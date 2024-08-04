@@ -88,4 +88,4 @@ ph.label_panels(fig, labels=['A1', 'A2', 'A3', 'B', 'C1', 'C2', 'C3', 'C4', 'C5'
 # fig.savefig(constants.PAPER_PLOT_FOLDER+str(6) +'.tiff', dpi = fig.dpi)
 
 #plt.show()
-param_helpers.fig_params([_1SFF], ['1SFF'], 6)
+param_helpers.fig_params([_1SFF], ['All'], 6)

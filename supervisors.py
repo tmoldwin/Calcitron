@@ -23,10 +23,10 @@ class Supervisor:
     def to_pandas(self):
         # Create a dictionary of the values
         data = {
-            'Z_p': self.Z_p,
-            'Z_d': self.Z_d,
-            'Z': self.Z,
-            'eta_b': self.eta_b
+            'Z_P': round(self.Z_p, 2),
+            'Z_D': round(self.Z_d, 2),
+            'Z': round(self.Z, 2),
+            'η_b': round(self.eta_b, 2)
         }
 
         # Remove zero values

@@ -5,6 +5,8 @@ import os
 # (i.e. files starting with "Fig" followed by zero or more characters and ending with ".py")
 from matplotlib import pyplot as plt
 
+import param_helpers
+
 file_list = glob.glob("Fig*.py")
 
 # Iterate over the list of files
@@ -16,3 +18,5 @@ for file in file_list:
     print(str(file))
     os.system(f"python -B -u {file}")
     plt.close('all')
+
+param_helpers.param_concat()

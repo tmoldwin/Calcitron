@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 from matplotlib.gridspec import GridSpec
 from numpy.random import choice
 import constants
+import param_helpers
 import supervisors
 from calcitron_calcium_bar_charts import calcium_barplot
 from calcitron import Calcitron
@@ -80,5 +81,6 @@ for ax in list(results_axes.values()):
 ph.label_panels(fig, labels=['A', 'B', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6'], size=12)
 # plt.savefig(constants.PLOT_FOLDER + '5.svg', dpi=fig.dpi)
 # plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig5.tiff', dpi = fig.dpi)
+param_helpers.fig_params([hetero_calc], ['All'], 5)
 plt.show()
 
