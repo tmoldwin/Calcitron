@@ -1,104 +1,204 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-import constants
-import param_helpers
+import plot_helpers
+from Centroid_finder import example_find_peaks, compute_distance_grid, find_peaks
+from scipy.ndimage import gaussian_filter
 from calcitron import Calcitron
 from calcitron_calcium_bar_charts import calcium_barplot
-import plot_helpers as ph
 from plasticity_rule import Plasticity_Rule as PR
 from plasticity_rule import Region
+import constants
+import param_helpers
 
-# TINY_SIZE = 6
-# SMALL_SIZE = 8
-# MEDIUM_SIZE = 10
-# BIGGER_SIZE = 12
-#
-# plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
-# plt.rc('axes', titlesize=TINY_SIZE)  # fontsize of the axes title
-# plt.rc('axes', labelsize=SMALL_SIZE)  # fontsize of the x and y labels
-# plt.rc('xtick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
-# plt.rc('ytick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
-# plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
-# plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+plt.rcParams['font.size'] = 12
+plt.rcParams['axes.titlesize'] = 14
+plt.rcParams['xtick.labelsize'] = 14
+plt.rcParams['ytick.labelsize'] = 14
+plt.rcParams['legend.fontsize'] = 14
+plt.rcParams['axes.labelsize'] = 14
 
-plt.rc('xtick', labelsize=9)  # fontsize of the tick labels
-
-fig, axes = plt.subplots(4, 4, figsize = (8, 4*1.8), dpi = 300)#, sharex = True)
-x_barplot = ["pre", "post", "both"]
-alpha_vector = np.array([1,0,1])
-gamma_vector = np.array([0,1,1])
-bar_matrix = [alpha_vector, gamma_vector]
-
-dicts = [{'alpha': 0.2, 'gamma': 0.2,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.3, 'gamma': 0.3,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.1, 'gamma': 0.6,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.6, 'gamma': 0.1,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.6, 'gamma': 0.6,'theta_D': 0.5, 'theta_P': 1.3},
-{'alpha': 0.45, 'gamma': 0.45,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.3, 'gamma': 0.6,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.3, 'gamma': 0.9,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.6, 'gamma': 0.3,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.6, 'gamma': 0.6,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.6, 'gamma': 0.9,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.9, 'gamma': 0.3,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.9, 'gamma': 0.6,'theta_D': 0.5, 'theta_P': 0.8},
-{'alpha': 0.9, 'gamma': 0.9,'theta_D': 0.5, 'theta_P': 0.8}]
-
-eta = 1
 def rules_from_dict(dicts):
     rules = []
     coeffs = []
     calcitrons = []
     for d in dicts:
-        regions = [Region('N', (-np.inf, d['theta_D']), 0.5, 0),
-                   Region('D', (d['theta_D'], d['theta_P']), 0, eta),
-                   Region('P', (d['theta_P'], np.inf), 1, eta)]
+        if d['theta_D'] < d['theta_P']:
+            regions = [Region('N', (-np.inf, d['theta_D']), 0.5, eta = 0),
+                       Region('D', (d['theta_D'], d['theta_P']), 0, eta = 1),
+                       Region('P', (d['theta_P'], np.inf), 1, eta = 1)]
+        else:
+            regions = [Region('N', (-np.inf, d['theta_P']), 0.5, eta = 0),
+                       Region('P', (d['theta_P'], d['theta_D']), fp = 1, eta = 1),
+                       Region('D', (d['theta_D'], np.inf), fp = 0, eta = 1)]
         rules.append(PR(regions))
         coeffs.append([d['alpha'], 0, d['gamma'],0])
         calcitrons.append(Calcitron(coeffs[-1], rules[-1]))
     return rules, coeffs
+def create_peak_annotations(X, Y, peak_indices, theta_D, theta_P, special = None):
+    annotations = {}
+    for i in range(len(peak_indices[0])):
+        x = X[peak_indices][i]
+        y = Y[peak_indices][i]
+        rule = rules_from_dict([{'alpha': x, 'gamma': y, 'theta_D': theta_D, 'theta_P': theta_P}])[0][0]
+        print(rule)
+        x_code = int(rule.bar_code_from_C(x))
+        y_code = int(rule.bar_code_from_C(y))
+        xy_code = int(rule.bar_code_from_C(x+y))
+        annotation = rule.region_names[x_code] + rule.region_names[y_code] + rule.region_names[xy_code]
+        if annotation in special:
+            annotation = f"{annotation}*"
+        annotations[(x, y)] = annotation
+    return annotations
 
-rules, coeffs = rules_from_dict(dicts)
+def plot_lines_with_annotations(ax, lines, annotations, theta_d, theta_p, line_colors):
+    # Define bounds of the plane
+    x_min, x_max = 0, 1.2
+    y_min, y_max = 0, 1.2
+
+    x_grid = np.linspace(x_min, x_max, 200)
+
+    # Plot the lines with specified colors
+    for line in lines:
+        a, b, c = line
+        color = line_colors.get(tuple(line), 'black')
+        if b != 0:
+            y_vals = -(a * x_grid + c) / b
+            ax.plot(x_grid, y_vals, color=color)
+        else:
+            x_val = -c / a
+            ax.axvline(x=x_val, color=color)
+
+    # Annotate peaks
+    for (x, y), annotation in annotations.items():
+        ax.annotate(annotation, (x, y), textcoords="offset points", xytext=(0,-5), ha='center', color='black')
+
+    ax.set_xlim(x_min, x_max)
+    ax.set_ylim(y_min, y_max)
+    ax.set_xlabel(r'$\alpha$')
+    ax.set_ylabel(r'$\gamma$')
+    ax.set_title(r'$\theta_D = %.1f, \theta_P = %.1f$' % (theta_d, theta_p))
+    ax.grid(False)
 
 
 
-#for anti hebb
-# pre_post_and_both_below_thetaD = {r'$\alpha$': 0.2, 'gamma': 0.2,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_post_below_and_both_over_thetaD = {r'$\alpha$': 0.3, 'gamma': 0.3,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_below_post_and_both_over_thetaD = {r'$\alpha$': 0.1, 'gamma': 0.6,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_over_post_below_both_over_thetaD = {r'$\alpha$': 0.6, 'gamma': 0.1,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_post_and_both_over_thetaD = {r'$\alpha$': 0.6, 'gamma': 0.6,'theta_D': 1.3, 'theta_P': 0.5}
-# pre_post_below_thetaD_and_both_over_thetaP = {r'$\alpha$': 0.45, 'gamma': 0.45,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_below_thetaD_post_over_thetaD_both_over_thetaP = {r'$\alpha$': 0.3, 'gamma': 0.6,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_below_thetaD_post_and_both_over_thetaP = {r'$\alpha$': 0.3, 'gamma': 0.9,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_over_thetaD_post_below_thetaD_both_over_thetaP = {r'$\alpha$': 0.6, 'gamma': 0.3,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_post_over_thetaD_both_over_thetaP = {r'$\alpha$': 0.6, 'gamma': 0.6,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_over_thetaD_post_and_both_over_thetaP = {r'$\alpha$': 0.6, 'gamma': 0.9,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_over_thetaP_post_below_thetaD_both_over_thetaP = {r'$\alpha$': 0.9, 'gamma': 0.3,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_over_thetaP_post_over_thetaD_both_over_thetaP = {r'$\alpha$': 0.9, 'gamma': 0.6,'theta_D': 0.8, 'theta_P': 0.5}
-# pre_post_and_both_over_thetaP = {r'$\alpha$': 0.9, 'gamma': 0.9,'theta_D': 0.8, 'theta_P': 0.5}
 
-unravelled_axes = axes.ravel()
-for i in range(len(dicts)):
-    params = dicts[i]
-    ax = unravelled_axes[i]
-    ax.set_ylim([0, 2.1])
-    calcium_barplot(bar_matrix, coeffs[i], rules[i], used_coeff_inds= [0,2], x_labels=x_barplot, ax=ax)
+# Define parameters
+theta_ds = [0.3, 0.7]
+theta_p = 1.0
+thetas = [[(0.3,1.0), (0.7,1.0)], [(1.0,0.3), (1.0,0.3)]]
+fig_names = ['3', '3_1']
+annotation_orders = [{'N': 0, 'D': 1, 'P': 2}, {'N': 0, 'P': 1, 'D': 2}]
+specials = [['NNP', 'DDD'],['NND', 'PPP']]
 
-fig.delaxes(unravelled_axes[-1])
-fig.delaxes(unravelled_axes[-2])
-ax.legend(bbox_to_anchor=(1.1, 1.05))
-#ph.share_axes(axes,'both','both',1,1,0,1)
-plt.tight_layout()
-# plt.savefig(constants.PLOT_FOLDER + '3.svg', dpi=fig.dpi)
-# plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig3.tiff', dpi = fig.dpi)
-plt.show()
+for fig_num in range(len(fig_names)):
+    threshold_sets = thetas[fig_num]
+    annotation_order = annotation_orders[fig_num]
+    special = specials[fig_num]
+    mx = 1.2
+    fig, axes = plt.subplots(4, 4, figsize=(16, 12))
 
-def panel_to_position(panel_number):
-    # Subtract 1 from the panel_number to start indexing from 0
-    row = panel_number // 4 + 1
-    col = panel_number % 4 + 1
-    return f'{row},{col}'
+    peaks = [[] for _ in range(2)]
+    linaxes = [axes[0,0], axes [3,2]]
 
-param_helpers.fig_params(rules, [panel_to_position(i) for i in range(len(rules))], 3, coeffs = coeffs)
+
+    for i, threshold_set in enumerate(threshold_sets):
+        theta_d, theta_p = threshold_set
+        ax = linaxes[i]
+        lines = [
+            [1, 0, -theta_d],  # x = theta_d
+            [1, 0, -theta_p],  # x = theta_p
+            [0, 1, -theta_d],  # y = theta_d
+            [0, 1, -theta_p],  # y = theta_p
+            [1, 1, -theta_d],  # x + y = theta_d
+            [1, 1, -theta_p],  # x + y = theta_p
+            [1, 0, 0],  # x = 0 (left boundary)
+            [0, 1, 0],  # y = 0 (bottom boundary)
+            [1, 0, -mx],  # x = mx (right boundary)
+            [0, 1, -mx],  # y = mx (top boundary)
+        ]
+
+        # Define line colors
+        line_colors = {
+            (1, 0, -theta_d): 'blue',
+            (1, 0, -theta_p): 'red',
+            (0, 1, -theta_d): 'blue',
+            (0, 1, -theta_p): 'red',
+            (1, 1, -theta_d): 'blue',
+            (1, 1, -theta_p): 'red',
+            (1, 0, 0): 'black',
+            (0, 1, 0): 'black',
+            (1, 0, -mx): 'black',
+            (0, 1, -mx): 'black',
+        }
+
+        # Find peaks
+        peak_x, peak_y = example_find_peaks(lines)
+
+        # Create peak annotations
+        grid_size = 100
+        x_min, x_max = 0, 1.2
+        y_min, y_max = 0, 1.2
+        x_grid = np.linspace(x_min, x_max, grid_size)
+        y_grid = np.linspace(y_min, y_max, grid_size)
+        X, Y = np.meshgrid(x_grid, y_grid)
+        Z = compute_distance_grid(X, Y, np.array(lines))
+        Z_smoothed = gaussian_filter(Z, sigma=4.8)
+        peak_indices = find_peaks(Z_smoothed, grid_size)
+        annotations = create_peak_annotations(X, Y, peak_indices, theta_d, theta_p, special = special)
+
+        # Collect peaks
+        for (x, y), annotation in annotations.items():
+            peaks[i].append({'alpha': x, 'gamma': y, 'theta_D': theta_d, 'theta_P': theta_p, 'annotation': annotation})
+
+        # Sort peaks based on annotation order
+        peaks[i] = sorted(peaks[i], key=lambda d: annotation_order[d['annotation'][0]])
+
+        # Plot lines with annotations
+        plot_lines_with_annotations(ax, lines, annotations, theta_d, theta_p, line_colors)
+    axes[0, 1].set_yticks([]); axes[0, 1].set_ylabel(''); axes[0, 1].tick_params(labelleft=False)
+
+    # Create dictionaries for bar plots
+    dicts = []
+    for peak in peaks[0]:
+        dicts.append({'alpha': round(peak['alpha'],2), 'gamma': round(peak['gamma'],2), 'theta_D': theta_d, 'theta_P': theta_p})
+
+    # Add the final dictionary using the second theta parameter and the peak associated with the region NNP
+    for peak in peaks[1]:
+        if peak['annotation'] == specials[fig_num][1]+'*':
+            dicts.append({'alpha': round(peak['alpha'],2), 'gamma': round(peak['gamma'],2), 'theta_D': theta_d, 'theta_P': theta_p})
+            break
+
+    # Continue with the rest of the code
+    print(dicts)
+    print(len(dicts))
+    eta = 1
+
+    rules, coeffs = rules_from_dict(dicts)
+    x_barplot = ["pre", "post", "both"]
+    alpha_vector = np.array([1,0,1])
+    gamma_vector = np.array([0,1,1])
+    bar_matrix = [alpha_vector, gamma_vector]
+
+    unravelled_axes = axes.ravel()
+    for i in range(0, len(dicts)-1):
+        params = dicts[i]
+        ax = unravelled_axes[i+1]
+        ax.set_ylim([0, 2.5])
+        calcium_barplot(bar_matrix, coeffs[i], rules[i], used_coeff_inds=[0,2], x_labels=x_barplot, ax=ax, set_ylim=False)
+
+    #do the last one
+    params = dicts[-1]
+    ax = unravelled_axes[-1]
+    ax.set_ylim([0, 2.5])
+    calcium_barplot(bar_matrix, coeffs[-1], rules[-1], used_coeff_inds=[0,2], x_labels=x_barplot, ax=ax, set_ylim=False)
+
+
+    unravelled_axes[2].legend(bbox_to_anchor = (0.07, 0.45))
+    labels = labels = ["A"] + [f"B{i}" for i in range(1, 14)] + ["C", "D"]
+    plot_helpers.label_panels(fig, labels, size = 16)
+    plt.tight_layout()
+    labels = ["A"] + [f"B{i}" for i in range(1, 14)] + ["C", "D"]
+    param_helpers.fig_params(rules, [label for label in labels if not label in ['A', 'C']], fig_names[fig_num], coeffs = coeffs)
+    plt.savefig(constants.PLOT_FOLDER + fig_names[fig_num] + '.svg', dpi=fig.dpi)
+    plt.savefig(constants.PAPER_PLOT_FOLDER + fig_names[fig_num] + '.tiff', dpi = fig.dpi)

@@ -79,3 +79,5 @@ def param_concat():
     # Print the resulting DataFrame
     print(df)
     df.to_csv(constants.PARAMS_FOLDER + f'all_params.csv', index=False, encoding='utf-8-sig')
+
+param_concat()

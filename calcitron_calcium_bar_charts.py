@@ -23,7 +23,7 @@ def texify(strings):
         return new_strings
 
 def calcium_barplot(binary_mat, coeffs, rule, x_labels, used_coeff_inds = [0, 1, 2, 3], ax=None,
-                    rotation=0):
+                    rotation=0, set_ylim = True):
     '''
     '''
     (f'coeffs: {coeffs}', f'rule: {rule}', f'x_labels: {x_labels}', f'used_coeff_inds: {used_coeff_inds}')
@@ -50,7 +50,8 @@ def calcium_barplot(binary_mat, coeffs, rule, x_labels, used_coeff_inds = [0, 1,
     ax.set_yticklabels(labels = rule.theta_names)
     ax.tick_params(axis = 'x', rotation=rotation)
     ax.set_ylabel('$\mathregular{C_{Total}}$')
-    ax.set_ylim(0, 1.2 * np.max(np.hstack((bottom, rule.thetas))))
+    if set_ylim:
+        ax.set_ylim(0, 1.2 * np.max(np.hstack((bottom, rule.thetas))))
     for i in range(len(x_labels)):
         ax.annotate(annots[i], (i, 0.9*ax.get_ylim()[-1]))
     title_string = ', '.join([texify(coeff) + ' = ' +
