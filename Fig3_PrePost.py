@@ -18,6 +18,7 @@ plt.rcParams['ytick.labelsize'] = 14
 plt.rcParams['legend.fontsize'] = 14
 plt.rcParams['axes.labelsize'] = 14
 
+plt.ion()
 def rules_from_dict(dicts):
     rules = []
     coeffs = []
@@ -35,23 +36,20 @@ def rules_from_dict(dicts):
         coeffs.append([d['alpha'], 0, d['gamma'],0])
         calcitrons.append(Calcitron(coeffs[-1], rules[-1]))
     return rules, coeffs
-def create_peak_annotations(X, Y, peak_indices, theta_D, theta_P, special = None):
+def create_peak_annotations(peaks, theta_D, theta_P, special = None):
     annotations = {}
-    for i in range(len(peak_indices[0])):
-        x = X[peak_indices][i]
-        y = Y[peak_indices][i]
+    for i in range(len(peaks[0])):
+        x = peaks[0][i]
+        y = peaks[1][i]
         rule = rules_from_dict([{'alpha': x, 'gamma': y, 'theta_D': theta_D, 'theta_P': theta_P}])[0][0]
-        print(rule)
         x_code = int(rule.bar_code_from_C(x))
         y_code = int(rule.bar_code_from_C(y))
         xy_code = int(rule.bar_code_from_C(x+y))
         annotation = rule.region_names[x_code] + rule.region_names[y_code] + rule.region_names[xy_code]
-        if annotation in special:
-            annotation = f"{annotation}*"
         annotations[(x, y)] = annotation
     return annotations
 
-def plot_lines_with_annotations(ax, lines, annotations, theta_d, theta_p, line_colors):
+def plot_lines_with_annotations(ax, lines, annotations, theta_d, theta_p, line_colors, specials):
     # Define bounds of the plane
     x_min, x_max = 0, 1.2
     y_min, y_max = 0, 1.2
@@ -71,6 +69,8 @@ def plot_lines_with_annotations(ax, lines, annotations, theta_d, theta_p, line_c
 
     # Annotate peaks
     for (x, y), annotation in annotations.items():
+        if annotation in special:
+            annotation = f"{annotation}*"
         ax.annotate(annotation, (x, y), textcoords="offset points", xytext=(0,-5), ha='center', color='black')
 
     ax.set_xlim(x_min, x_max)
@@ -80,43 +80,29 @@ def plot_lines_with_annotations(ax, lines, annotations, theta_d, theta_p, line_c
     ax.set_title(r'$\theta_D = %.1f, \theta_P = %.1f$' % (theta_d, theta_p))
     ax.grid(False)
 
-
+def order_indices(key, order):
+    return [order[char] for char in key]
 
 
 # Define parameters
-theta_ds = [0.3, 0.7]
-theta_p = 1.0
 thetas = [[(0.3,1.0), (0.7,1.0)], [(1.0,0.3), (1.0,0.3)]]
 fig_names = ['3', '3_1']
 annotation_orders = [{'N': 0, 'D': 1, 'P': 2}, {'N': 0, 'P': 1, 'D': 2}]
-specials = [['NNP', 'DDD'],['NND', 'PPP']]
+specials = [['DDD', 'NNP'],['NND', 'PPP']]
+mx = 1.2
 
 for fig_num in range(len(fig_names)):
     threshold_sets = thetas[fig_num]
     annotation_order = annotation_orders[fig_num]
     special = specials[fig_num]
-    mx = 1.2
     fig, axes = plt.subplots(4, 4, figsize=(16, 12))
 
-    peaks = [[] for _ in range(2)]
-    linaxes = [axes[0,0], axes [3,2]]
+    all_dicts = [{} for _ in range(2)]
+    linaxes = [axes[0,0], axes [3,2]] #axes for the line plot
+    for threshold_num, threshold_set in enumerate(threshold_sets):
 
-
-    for i, threshold_set in enumerate(threshold_sets):
         theta_d, theta_p = threshold_set
-        ax = linaxes[i]
-        lines = [
-            [1, 0, -theta_d],  # x = theta_d
-            [1, 0, -theta_p],  # x = theta_p
-            [0, 1, -theta_d],  # y = theta_d
-            [0, 1, -theta_p],  # y = theta_p
-            [1, 1, -theta_d],  # x + y = theta_d
-            [1, 1, -theta_p],  # x + y = theta_p
-            [1, 0, 0],  # x = 0 (left boundary)
-            [0, 1, 0],  # y = 0 (bottom boundary)
-            [1, 0, -mx],  # x = mx (right boundary)
-            [0, 1, -mx],  # y = mx (top boundary)
-        ]
+        ax = linaxes[threshold_num]
 
         # Define line colors
         line_colors = {
@@ -132,63 +118,41 @@ for fig_num in range(len(fig_names)):
             (0, 1, -mx): 'black',
         }
 
-        # Find peaks
-        peak_x, peak_y = example_find_peaks(lines)
-
-        # Create peak annotations
-        grid_size = 100
-        x_min, x_max = 0, 1.2
-        y_min, y_max = 0, 1.2
-        x_grid = np.linspace(x_min, x_max, grid_size)
-        y_grid = np.linspace(y_min, y_max, grid_size)
-        X, Y = np.meshgrid(x_grid, y_grid)
-        Z = compute_distance_grid(X, Y, np.array(lines))
-        Z_smoothed = gaussian_filter(Z, sigma=4.8)
-        peak_indices = find_peaks(Z_smoothed, grid_size)
-        annotations = create_peak_annotations(X, Y, peak_indices, theta_d, theta_p, special = special)
-
-        # Collect peaks
+        line_list = [list(key) for key in line_colors.keys()]
+        peaks = example_find_peaks(line_list, grid_size = 100, sigma = 4.9, plot = False)
+        annotations = create_peak_annotations(peaks, theta_d, theta_p)
         for (x, y), annotation in annotations.items():
-            peaks[i].append({'alpha': x, 'gamma': y, 'theta_D': theta_d, 'theta_P': theta_p, 'annotation': annotation})
-
+            all_dicts[threshold_num][annotation] = {'alpha': round(x, 2), 'gamma': round(y, 2), 'theta_D': theta_d, 'theta_P': theta_p}
         # Sort peaks based on annotation order
-        peaks[i] = sorted(peaks[i], key=lambda d: annotation_order[d['annotation'][0]])
+        all_dicts[threshold_num] = all_dicts[threshold_num] = dict(sorted(all_dicts[threshold_num].items(), key=lambda item: order_indices(item[0], annotation_order)))
 
-        # Plot lines with annotations
-        plot_lines_with_annotations(ax, lines, annotations, theta_d, theta_p, line_colors)
+        #plot the lines with their annotations
+        plot_lines_with_annotations(ax, line_list, annotations, theta_d, theta_p, line_colors, specials = special)
+
+    print(all_dicts)
     axes[0, 1].set_yticks([]); axes[0, 1].set_ylabel(''); axes[0, 1].tick_params(labelleft=False)
 
-    # Create dictionaries for bar plots
-    dicts = []
-    for peak in peaks[0]:
-        dicts.append({'alpha': round(peak['alpha'],2), 'gamma': round(peak['gamma'],2), 'theta_D': theta_d, 'theta_P': theta_p})
-
-    # Add the final dictionary using the second theta parameter and the peak associated with the region NNP
-    for peak in peaks[1]:
-        if peak['annotation'] == specials[fig_num][1]+'*':
-            dicts.append({'alpha': round(peak['alpha'],2), 'gamma': round(peak['gamma'],2), 'theta_D': theta_d, 'theta_P': theta_p})
-            break
+    dicts_to_plot = list(all_dicts[0].values())
+    dicts_to_plot.append(all_dicts[1][special[1]])
 
     # Continue with the rest of the code
-    print(dicts)
-    print(len(dicts))
     eta = 1
 
-    rules, coeffs = rules_from_dict(dicts)
+    rules, coeffs = rules_from_dict(dicts_to_plot)
     x_barplot = ["pre", "post", "both"]
     alpha_vector = np.array([1,0,1])
     gamma_vector = np.array([0,1,1])
     bar_matrix = [alpha_vector, gamma_vector]
 
     unravelled_axes = axes.ravel()
-    for i in range(0, len(dicts)-1):
-        params = dicts[i]
-        ax = unravelled_axes[i+1]
+    for threshold_num in range(0, len(dicts_to_plot) - 1):
+        params = dicts_to_plot[threshold_num]
+        ax = unravelled_axes[threshold_num + 1]
         ax.set_ylim([0, 2.5])
-        calcium_barplot(bar_matrix, coeffs[i], rules[i], used_coeff_inds=[0,2], x_labels=x_barplot, ax=ax, set_ylim=False)
+        calcium_barplot(bar_matrix, coeffs[threshold_num], rules[threshold_num], used_coeff_inds=[0, 2], x_labels=x_barplot, ax=ax, set_ylim=False)
 
     #do the last one
-    params = dicts[-1]
+    params = dicts_to_plot[-1]
     ax = unravelled_axes[-1]
     ax.set_ylim([0, 2.5])
     calcium_barplot(bar_matrix, coeffs[-1], rules[-1], used_coeff_inds=[0,2], x_labels=x_barplot, ax=ax, set_ylim=False)
@@ -200,5 +164,6 @@ for fig_num in range(len(fig_names)):
     plt.tight_layout()
     labels = ["A"] + [f"B{i}" for i in range(1, 14)] + ["C", "D"]
     param_helpers.fig_params(rules, [label for label in labels if not label in ['A', 'C']], fig_names[fig_num], coeffs = coeffs)
+
     plt.savefig(constants.PLOT_FOLDER + fig_names[fig_num] + '.svg', dpi=fig.dpi)
     plt.savefig(constants.PAPER_PLOT_FOLDER + fig_names[fig_num] + '.tiff', dpi = fig.dpi)

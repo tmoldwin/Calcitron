@@ -80,4 +80,5 @@ def param_concat():
     print(df)
     df.to_csv(constants.PARAMS_FOLDER + f'all_params.csv', index=False, encoding='utf-8-sig')
 
-param_concat()
+if __name__ == 'main':
+    param_concat()

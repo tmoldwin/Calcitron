@@ -26,7 +26,7 @@ def find_peaks(Z_smoothed, grid_size):
     peak_indices = np.where(peaks)
     return peak_indices
 
-def example_find_peaks(lines, grid_size=200, sigma=5):
+def example_find_peaks(lines, grid_size=200, sigma=4, plot = False):
     # Define bounds of the plane
     x_min, x_max = 0, 1.2
     y_min, y_max = 0, 1.2
@@ -46,6 +46,9 @@ def example_find_peaks(lines, grid_size=200, sigma=5):
 
     # Find peaks
     peak_indices = find_peaks(Z_smoothed, grid_size)
+    if plot:
+        plot_peaks(X, Y, Z_smoothed, peak_indices, lines, grid_size=grid_size)
+        plt.show()
 
     return X[peak_indices], Y[peak_indices]
 
@@ -55,6 +58,7 @@ def plot_peaks(X, Y, Z_smoothed, peak_indices, lines, grid_size=200):
     y_min, y_max = 0, 1.2
 
     x_grid = np.linspace(x_min, x_max, grid_size)
+    y_grid = np.linspace(y_min, y_max, grid_size)
 
     # Create a figure with side-by-side subplots
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
