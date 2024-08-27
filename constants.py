@@ -19,6 +19,6 @@ plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 PLOT_FOLDER = 'Calc_Plots/'
 two_levels_up_directory = os.path.join(os.getcwd(), ".." + os.sep + "../")
-PAPER_PLOT_FOLDER = two_levels_up_directory+'Calcitron_Paper/Figures/FinalTIFFs/'
+PAPER_PLOT_FOLDER = two_levels_up_directory + 'Dropbox/Calcitron_Paper/Figures/FinalTIFFs/'
 DATA_FOLDER = 'Data/'
 PARAMS_FOLDER = 'Params/'

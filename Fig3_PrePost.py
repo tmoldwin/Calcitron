@@ -157,7 +157,7 @@ for fig_num in range(len(fig_names)):
     calcium_barplot(bar_matrix, coeffs[-1], rules[-1], used_coeff_inds=[0,2], x_labels=x_barplot, ax=ax, set_ylim=False)
 
 
-    unravelled_axes[2].legend(bbox_to_anchor = (0.07, 0.45))
+    unravelled_axes[1].legend(bbox_to_anchor = (0.07, 0.45))
     labels = labels = ["A"] + [f"B{i}" for i in range(1, 14)] + ["C", "D"]
     plot_helpers.label_panels(fig, labels, size = 16)
     plt.tight_layout()
