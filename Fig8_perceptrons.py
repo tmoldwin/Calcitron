@@ -11,8 +11,8 @@ from calcitron import Calcitron
 import rule_comparison_grid as rcg
 import random
 import plot_helpers as ph
-random.seed(1)
-np.random.seed(1)
+plt.rc('legend', fontsize=8)
+
 
 #
 P = 6
@@ -22,7 +22,7 @@ fp = 0
 fd = 1
 epochs = 10
 eta = 0.2
-X, y = pg.generate_perceptron_patterns(P, N, sparsity)
+X, y = pg.generate_perceptron_patterns(P, N, sparsity, seed = 7)
 
 label_dict = {[tuple(x) for x in X][i]: y[i] for i in range(len(X))}
 patterns = np.vstack([X for i in range(epochs)])
@@ -41,10 +41,10 @@ x_bar = ["local", "BAP", "$Z_P$",
          "local+\nBAP", "local+$Z_P$",
          "local\nBAP+$Z_P$"]
 alpha_vector = np.array([1, 0, 0, 0, 1, 1, 1])
-beta_vector = np.array([0, 0, 0, 0, 0, 0, 0])
+# beta_vector = np.array([0, 0, 0, 0, 0, 0, 0])
 gamma_vector = np.array([0, 1, 0, 1, 1, 0, 1])
 delta_vector = np.array([0, 0, 0.3, 0.3, 0, 0.3, 0.3])
-target_bar_matrix = [alpha_vector, beta_vector, gamma_vector, delta_vector]
+target_bar_matrix = [alpha_vector, gamma_vector, delta_vector]
 target_calc = Calcitron(target_coeffs, target_rule, supervisor = sprvs.target_perceptron_supervisor(0.3, X,y), bias = bias)
 
 
@@ -65,7 +65,7 @@ cp_gamma_vector =  np.zeros(len(x_bar_critic_perceptron))
 cp_Zd_vector = np.array([0, 1, 0, 1, 0]) * Z_d
 cp_Zp_vector = np.array([0, 0, 1, 0, 1]) * Z_p
 cp_Z_vector = cp_Zp_vector + cp_Zd_vector
-critic_bar_matrix = [cp_alpha_vector, np.zeros(len(x_bar_critic_perceptron)), np.zeros(len(x_bar_critic_perceptron)), cp_Z_vector]
+critic_bar_matrix = [cp_alpha_vector, np.zeros(len(x_bar_critic_perceptron)), cp_Z_vector]
 critic_perceptron_calc = Calcitron(critic_coeffs, critic_rule,
                                    supervisor=sprvs.critic_perceptron_supervisor(Z_d, Z_p, X, y), bias = bias)
 
@@ -73,11 +73,11 @@ calcitrons = [target_calc, critic_perceptron_calc]
 titles = ["Target Perceptron", "Critic Perceptron"]
 all_bar_mats = [target_bar_matrix, critic_bar_matrix]
 x_barplot = [x_bar, x_bar_critic_perceptron]
-all_local_inputs = [patterns,patterns]
+all_local_inputs = [patterns, patterns]
 fig, bar_subplots, results_subplots = \
-    rcg.rule_comparison_grid(calcitrons, titles, all_bar_mats, x_barplot, all_local_inputs, show_supervisor=1, plot_cbar = [1], figsize = (8,8))
+    rcg.rule_comparison_grid(calcitrons, titles, all_bar_mats, x_barplot, all_local_inputs, show_supervisor=1, coeffs_to_use = [0,2,3], plot_cbar = [1], figsize = (8,8))
 for ax in np.array(results_subplots).ravel():
-    ax.set_xticks(range(len(patterns)), labels = [label_dict[tuple(pattern)] for pattern in patterns])
+    ax.set_xticks(range(len(patterns)), labels = [label_dict[tuple(pattern)] for pattern in patterns], size = 8)
 np.array(results_subplots)[5][0].set_xticks(range(len(patterns)), labels = [str(label_dict[tuple(patterns[i])]) + '\n' + str(numbers[i]) for i in range(len(patterns))])
 np.array(results_subplots)[5][1].set_xticks(range(len(patterns)), labels = [str(label_dict[tuple(patterns[i])]) + '\n' + str(numbers[i]) for i in range(len(patterns))])
 np.array(results_subplots)[5][0].set_xlabel('label\npattern #')
@@ -85,7 +85,12 @@ np.array(results_subplots)[5][1].set_xlabel('label\npattern #')
 letters = ['B','D']
 labels = np.array([[letter + str(j) for letter in letters] for j in range(1,8)]).ravel()
 ph.label_panels(fig, labels = labels, size = 8)
-# plt.savefig(constants.PLOT_FOLDER + '8.svg', dpi=fig.dpi)
+for ax in fig.axes:
+    ax.tick_params(axis='both', labelsize=6)
+
+fig.axes[0].legend(bbox_to_anchor = (-0.11, 1.5))
+
+plt.savefig(constants.PLOT_FOLDER + '8.svg', dpi=fig.dpi)
 
 
 param_helpers.fig_params(calcitrons, ['B','D'], 8)

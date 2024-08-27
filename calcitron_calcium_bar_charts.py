@@ -5,7 +5,7 @@ import plasticity_rule as pr
 
 coeff_names = ['alpha', 'beta', 'gamma', 'delta']
 color_dict = ["g", "tab:orange", "hotpink", "k"]
-label_dict = [r'$C_{local}$', r'$C_{het}$', r'$C_{BAP}$', r'$C_{SPRV}$']
+label_dict = [r'$C^i_{local}$', r'$C_{het}$', r'$C_{BAP}$', r'$C_{SPRV}$']
 
 def replace_all(text, dic):
     for i, j in dic.items():
@@ -49,11 +49,11 @@ def calcium_barplot(binary_mat, coeffs, rule, x_labels, used_coeff_inds = [0, 1,
     ax.set_yticks(rule.thetas)
     ax.set_yticklabels(labels = rule.theta_names)
     ax.tick_params(axis = 'x', rotation=rotation)
-    ax.set_ylabel('$\mathregular{C_{Total}}$')
+    ax.set_ylabel('$\mathregular{C^i_{total}}$')
     if set_ylim:
         ax.set_ylim(0, 1.2 * np.max(np.hstack((bottom, rule.thetas))))
     for i in range(len(x_labels)):
-        ax.annotate(annots[i], (i, 0.9*ax.get_ylim()[-1]))
+        ax.annotate(annots[i], (i, 0.9*ax.get_ylim()[-1]), ha='center')
     title_string = ', '.join([texify(coeff) + ' = ' +
                               str(used_coeffs[i]) for i, coeff
                               in enumerate(used_coeff_names)])

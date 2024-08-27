@@ -18,7 +18,7 @@ plt.rcParams['ytick.labelsize'] = 14
 plt.rcParams['legend.fontsize'] = 14
 plt.rcParams['axes.labelsize'] = 14
 
-plt.ion()
+#plt.ion()
 def rules_from_dict(dicts):
     rules = []
     coeffs = []
@@ -166,3 +166,4 @@ for fig_num in range(len(fig_names)):
 
     plt.savefig(constants.PLOT_FOLDER + fig_names[fig_num] + '.svg', dpi=fig.dpi)
     plt.savefig(constants.PAPER_PLOT_FOLDER + fig_names[fig_num] + '.tiff', dpi = fig.dpi)
+    plt.close(fig)

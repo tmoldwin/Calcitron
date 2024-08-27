@@ -95,11 +95,10 @@ class Calcitron:
         if ax is None:
             fig, ax = plt.subplots()
         im = ax.imshow(Ca, aspect = 'auto', cmap='Wistia', origin='lower', vmax = C_range[1], vmin = C_range[0])
-        ax.set_ylabel(r'$\bf{C_{Total}}$' + '\nsyn #')
+        ax.set_ylabel(r'$\bf{C_{total}^{i}}$' + '\nsyn #')
         if plot_cbar != 0:
             cbar = plt.colorbar(im)
-            cbar.set_label('$\mathregular{C_{Total}}$')
-        ax.set_xticks([1, Ca.shape[1] / 2, Ca.shape[1]])
+            cbar.set_label(r'$\mathregular{C_{Total}^{i}}$')
         ax.set_yticks([0, self.N-1], labels = [1, self.N])
         return im
 
@@ -168,9 +167,11 @@ class Calcitron:
         ax_list[-1].set_xlabel('Timestep')
         ph.share_axes(list(axes.values()), sharex = 'both', sharey=0)
 
-    def initialize_weights(self, w_init ='middle'):
+    def initialize_weights(self, w_init ='middle', sparsity = None, seed = 42):
         min_weight = min(self.plasticity_rule.fps)
         max_weight = max(self.plasticity_rule.fps)
+        if sparsity is None:
+            sparsity = self.N
         if np.isnan(min_weight):
             min_weight = 0
         if np.isnan(max_weight):
@@ -184,7 +185,6 @@ class Calcitron:
             return min_weight + np.random.random(self.N) * (max_weight - min_weight) #initializes weights to uniform betwee max and min weight
         elif isinstance(w_init, (float, int)):
             return np.ones(self.N) * w_init
-
     def train(self, X, w_init = 'middle', momentum = False):
         X = np.squeeze(np.atleast_2d(X))
         P = X.shape[0]

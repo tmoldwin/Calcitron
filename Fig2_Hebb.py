@@ -49,9 +49,9 @@ fig.axes[0].legend(bbox_to_anchor = (-0.2, 1.1))
 letters = ['A','B','C','D','E','F']
 labels = np.array([[letter + str(j) for letter in letters] for j in range(1,5)]).T.ravel()
 ph.label_panels(fig, labels = labels)
-# plt.savefig(constants.PLOT_FOLDER + '2.svg', dpi=fig.dpi)
-# plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig2.tiff', dpi = fig.dpi)
-plt.show()
+plt.savefig(constants.PLOT_FOLDER + '2.svg', dpi=fig.dpi)
+plt.savefig(constants.PAPER_PLOT_FOLDER + '2.tiff', dpi = fig.dpi)
+#plt.show()
 
 rule_titles = ['A1-F1', 'A2-F2', 'A3-F3', 'A4-F4']
 param_helpers.fig_params(calcitrons, rule_titles, 2)

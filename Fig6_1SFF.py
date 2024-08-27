@@ -84,8 +84,8 @@ _1SFF.all_plots(axes = results_axes)
 for ax in list(results_axes.values()):
     ax.set_xticks(range(len(input_nums)),input_nums)
 ph.label_panels(fig, labels=['A1', 'A2', 'A3', 'B', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6'])
-# fig.savefig(ph.SAVE_FOLDER+str(6) +'.svg', dpi = fig.dpi)
-# fig.savefig(constants.PAPER_PLOT_FOLDER+str(6) +'.tiff', dpi = fig.dpi)
+fig.savefig(ph.SAVE_FOLDER+str(6) +'.svg', dpi = fig.dpi)
+fig.savefig(constants.PAPER_PLOT_FOLDER+ str(6) +'.tiff', dpi = fig.dpi)
 
 #plt.show()
 param_helpers.fig_params([_1SFF], ['All'], 6)

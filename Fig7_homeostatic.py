@@ -11,6 +11,7 @@ import rule_comparison_grid as rcg
 import plot_helpers as ph
 
 plt.rc('legend', fontsize=8)
+plt.rc('xtick', labelsize=8)  # fontsize of the tick labels
 
 eps = 0.05
 num_rules = 4
@@ -97,7 +98,7 @@ fig.axes[0].legend(bbox_to_anchor = (-0.1, 1.1))
 letters = ['B','C','E','F']
 labels = np.array([[letter + str(j) for letter in letters] for j in range(1,8)]).ravel()
 ph.label_panels(fig, labels = labels, size = 8)
-# plt.savefig(constants.PLOT_FOLDER + '7.svg', dpi=fig.dpi)
+plt.savefig(constants.PLOT_FOLDER + '7.svg', dpi=fig.dpi)
 plt.show()
 
 param_helpers.fig_params(calcitrons, letters, 7)

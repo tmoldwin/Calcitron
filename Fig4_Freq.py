@@ -76,10 +76,10 @@ frequency_dep_imshow(0.15, 0.3, x, y_hat, ax=hm_subplots[3])
 im = frequency_dep_imshow(0, 0.3, x, y_hat, ax=hm_subplots[4])
 
 cbar = plt.colorbar(im, label='Plasticity', ax=hm_subplots[-1], fraction=0.046, pad=0.04)
-cbar.set_ticks(np.arange(3), labels=['N', 'D', 'P'])
+cbar.set_ticks([0.33, 0.99, 1.65], labels=rule.region_names)
 ph.label_panels(fig, labels = ['A','B1','B2','B3','B4','B5'], size = 12)
-# plt.savefig(constants.PLOT_FOLDER + '4.svg', dpi=fig.dpi)
-# plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig4.tiff', dpi = fig.dpi)
+plt.savefig(constants.PLOT_FOLDER + '4.svg', dpi=fig.dpi)
+plt.savefig(constants.PAPER_PLOT_FOLDER + '4.tiff', dpi = fig.dpi)
 #plt.show()
 
 panel_labels = ['A','B1','B2','B3','B4','B5']

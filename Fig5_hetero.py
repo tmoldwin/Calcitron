@@ -44,10 +44,10 @@ eta = 0.025
 signal_prob = 0.4
 theta_d = round((beta * k) - epsilon,1)
 theta_p = round(theta_d + alpha - epsilon,1)
-
-signal, labels, local_inputs = signal_noise_gen(N, P, signal_prob=signal_prob, density=density)
-exemplars = np.array([signal, pattern_gen(N, 1, density=density),
-                      pattern_gen(N, 1, density=density),signal, pattern_gen(N, 1, density=density)])
+seed = 2
+signal, labels, local_inputs = signal_noise_gen(N, P, signal_prob=signal_prob, density=density, seed = seed)
+exemplars = np.array([signal, pattern_gen(N, 1, density=density, seed = None),
+                      pattern_gen(N, 1, density=density, seed = None),signal, pattern_gen(N, 1, density=density, seed = None)])
 example_axes.imshow(exemplars.T, aspect = 'auto', origin = 'lower', cmap = ListedColormap(['w','k']))
 example_axes.set_xticks(range(len(exemplars)), labels = ['Signal', 'Noise', 'Noise','Signal','Noise'])
 example_axes.set_ylabel(r'$\bf{Input}$' + '\nsyn #')
@@ -66,9 +66,11 @@ bar_axes.legend(loc="center left")
 
 plot_dict = ["x", "weights", "output", "C_total", "Ca_bar_codes"]
 
+rng = np.random.default_rng(seed)
+w_init = (-bias / k * np.ones(N)) + rng.standard_normal(N)
 hetero_calc = Calcitron([alpha, beta, 0, 0], rule, supervisor = supervisors.signal_noise_supervisor(signal),
                         bias = bias)
-hetero_calc.train(local_inputs)
+hetero_calc.train(local_inputs, w_init=w_init)
 
 ph.share_axes(list(results_axes.values()), 'both', 'False')
 hetero_calc.all_plots(axes=results_axes)
@@ -79,8 +81,8 @@ for ax in list(results_axes.values()):
 # results_axes['output'].set_ylim([0.9*min(y_hat), 1.1*max(y_hat)])
 
 ph.label_panels(fig, labels=['A', 'B', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6'], size=12)
-# plt.savefig(constants.PLOT_FOLDER + '5.svg', dpi=fig.dpi)
-# plt.savefig(constants.PAPER_PLOT_FOLDER + 'fig5.tiff', dpi = fig.dpi)
+plt.savefig(constants.PLOT_FOLDER + '5.svg', dpi=fig.dpi)
+plt.savefig(constants.PAPER_PLOT_FOLDER + '5.tiff', dpi = fig.dpi)
 param_helpers.fig_params([hetero_calc], ['All'], 5)
 plt.show()
 

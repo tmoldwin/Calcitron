@@ -63,5 +63,5 @@ def rule_comparison_grid(calcitrons, rule_names, all_bar_mats, bar_names, all_in
         calc.all_plots(axes=plots_ax, plot_cbar=col_num in plot_cbar,
                         C_range=(0, max_calcium))
     ph.share_axes(results_subplots,'both','cols',1,1,1,1,1)
-    ph.share_axes(bar_subplots,1,1,1,1,1,1,False)
+    ph.share_axes(bar_subplots,1,1,1,0,1,1,False)
     return fig, bar_subplots, results_subplots #, cbar_axes
