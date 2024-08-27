@@ -85,10 +85,10 @@ def order_indices(key, order):
 
 
 # Define parameters
-thetas = [[(0.3,1.0), (0.7,1.0)], [(1.0,0.3), (1.0,0.3)]]
+thetas = [[(0.3,1.0), (0.7,1.0)], [(1.0,0.3), (1.0,0.7)]]
 fig_names = ['3', '3_1']
 annotation_orders = [{'N': 0, 'D': 1, 'P': 2}, {'N': 0, 'P': 1, 'D': 2}]
-specials = [['DDD', 'NNP'],['NND', 'PPP']]
+specials = [['DDD', 'NNP'],['PPP', 'NND']]
 mx = 1.2
 
 for fig_num in range(len(fig_names)):
@@ -129,8 +129,7 @@ for fig_num in range(len(fig_names)):
         #plot the lines with their annotations
         plot_lines_with_annotations(ax, line_list, annotations, theta_d, theta_p, line_colors, specials = special)
 
-    print(all_dicts)
-    axes[0, 1].set_yticks([]); axes[0, 1].set_ylabel(''); axes[0, 1].tick_params(labelleft=False)
+    #axes[0, 1].set_yticks([]); axes[0, 1].set_ylabel(''); axes[0, 1].tick_params(labelleft=False)
 
     dicts_to_plot = list(all_dicts[0].values())
     dicts_to_plot.append(all_dicts[1][special[1]])

@@ -3,7 +3,7 @@ import constants
 def latex_to_unicode(latex_list):
     # Dictionary mapping LaTeX symbols to Unicode
     latex_to_unicode_dict = {
-        r'\theta_{D}': 'η_D',
+        r'\theta_{D}': 'θ_D',
         r'\F_{D}': 'F_D',
         r'\eta_{D}': 'η_D',
         r'\theta_{P}': 'θ_P',
@@ -64,21 +64,22 @@ def param_concat():
     # Loop over the file numbers
     for i in range(1, 9):  # Replace n with the number of files
         # Read the CSV file into a DataFrame
-        df_temp = pd.read_csv(constants.PARAMS_FOLDER + f'fig{i}_params.csv')
+        if not i in [3]:
+            df_temp = pd.read_csv(constants.PARAMS_FOLDER + f'fig{i}_params.csv')
 
-        # Create a DataFrame with a single row containing the figure number
-        df_fig = pd.DataFrame({'Fig': [f'Fig{i}']})
+            # Create a DataFrame with a single row containing the figure number
+            df_fig = pd.DataFrame({'Fig': [f'Fig{i}']})
 
-        # Append the figure number DataFrame and the CSV DataFrame to the list
-        dfs.append(df_fig)
-        dfs.append(df_temp)
+            # Append the figure number DataFrame and the CSV DataFrame to the list
+            dfs.append(df_fig)
+            dfs.append(df_temp)
 
-    # Concatenate all the DataFrames in the list vertically
-    df = pd.concat(dfs, ignore_index=True)
+            # Concatenate all the DataFrames in the list vertically
+            df = pd.concat(dfs, ignore_index=True)
 
-    # Print the resulting DataFrame
-    print(df)
+            # Print the resulting DataFrame
+            print(df)
     df.to_csv(constants.PARAMS_FOLDER + f'all_params.csv', index=False, encoding='utf-8-sig')
 
-if __name__ == 'main':
+if __name__ == "__main__":
     param_concat()

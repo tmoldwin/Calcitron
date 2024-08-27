@@ -157,12 +157,13 @@ if __name__ == '__main__':
         Z = compute_distance_grid(X, Y, np.array(lines))
         Z_smoothed = gaussian_filter(Z, sigma=4.8)
         peak_indices = find_peaks(Z_smoothed, grid_size)
-        #plot_peaks(X, Y, Z_smoothed, peak_indices, lines, grid_size=grid_size)
-        annotations = create_peak_annotations(X, Y, peak_indices, theta_d, theta_p)
-
-        # Plot lines with annotations
-        plot_lines_with_annotations(ax, lines, annotations, theta_d, theta_p, line_colors)
-
-        axes[1].set_yticks([]); axes[1].set_ylabel(''); axes[1].tick_params(labelleft=False)
-        plt.tight_layout()
+        plot_peaks(X, Y, Z_smoothed, peak_indices, lines, grid_size=grid_size)
         plt.show()
+        # annotations = create_peak_annotations(X, Y, peak_indices, theta_d, theta_p)
+        #
+        # # Plot lines with annotations
+        # plot_lines_with_annotations(ax, lines, annotations, theta_d, theta_p, line_colors)
+        #
+        # axes[1].set_yticks([]); axes[1].set_ylabel(''); axes[1].tick_params(labelleft=False)
+        # plt.tight_layout()
+        # plt.show()
