@@ -56,12 +56,14 @@ Ca_stim[[20,50,70]] = np.array([theta_d, theta_p, theta_d]) + 0.1
 rule.Ca_stim_plot(Ca_stim, line_colors = ['k'], ax = rule_axes[1])
 rule.weight_change_plot_from_Ca(w0 = 0.5, Ca = Ca_stim, ax = rule_axes[2], line_colors=['k'], fp_colors=['k','b','r'], line_styles=['-'])
 
-calcitron_x_bar = ["Active syn", "Plateau", "Active +\nplateau"]
+calcitron_x_bar = ["Active \nsyn", "Plateau", "Active +\nplateau"]
 alpha_vector = np.array([1,0,1])
 delta_vector = np.array([0,1,1])
 calcitron_mat = [alpha_vector, delta_vector]
 calcium_barplot(calcitron_mat, coeffs, rule, calcitron_x_bar, used_coeff_inds=[0,3], ax=bar_ax)
 bar_ax.legend(bbox_to_anchor = (0, 0.99))
+# Set the xtick label size for bar_ax to 7
+bar_ax.tick_params(axis='x', labelsize=7)
 
 
 N = 14
@@ -83,6 +85,9 @@ _1SFF.train(inputs)
 _1SFF.all_plots(axes = results_axes)
 for ax in list(results_axes.values()):
     ax.set_xticks(range(len(input_nums)),input_nums)
+
+ax.set_xlabel('Pattern #')
+
 ph.label_panels(fig, labels=['A1', 'A2', 'A3', 'B', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6'])
 fig.savefig(ph.SAVE_FOLDER+str(6) +'.svg', dpi = fig.dpi)
 fig.savefig(constants.PAPER_PLOT_FOLDER+ str(6) +'.tiff', dpi = fig.dpi)

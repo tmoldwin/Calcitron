@@ -22,12 +22,25 @@ fp = 0
 fd = 1
 epochs = 10
 eta = 0.2
-X, y = pg.generate_perceptron_patterns(P, N, sparsity, seed = 7)
+seed = 100950
+# good seed = 100950
+rng = np.random.default_rng(seed)
 
-label_dict = {[tuple(x) for x in X][i]: y[i] for i in range(len(X))}
-patterns = np.vstack([X for i in range(epochs)])
-numbers = [i%P for i in range(len(patterns))]
+# Generate the perceptron patterns
+X, y = pg.generate_perceptron_patterns(P, N, sparsity, seed=seed)
+
+# Create a dictionary to map each pattern to its corresponding label
+label_dict = {tuple(X[i]): y[i] for i in range(len(X))}
+
+# Create a list of pattern numbers, each repeated for the specified number of epochs
+numbers = np.array([rng.permutation(P) for _ in range(epochs)]).flatten()
+# Create the shuffled patterns and labels
+patterns = np.array([X[num] for num in numbers])
+labels = np.array([label_dict[tuple(X[num])] for num in numbers])
+
+# Print the patterns
 print(patterns)
+
 
 bias = -0.5 * ((N * sparsity * fp) +
                          (N * sparsity * fd))

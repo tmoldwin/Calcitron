@@ -15,7 +15,7 @@ import param_helpers as pah
 cmap = mpl.cm.get_cmap('Wistia')
 class Calcitron:
     def __init__(self, coeffs, plasticity_rule, supervisor=sprv.null_supervisor(),
-                 activation_function = 'threshold', bias = 0):
+                 activation_function = 'threshold', bias = 0, w_init = 'middle'):
         #possible activation functions are 'linear', 'threshold'
         self.coeffs = coeffs
         self.alpha = coeffs[0]
@@ -27,6 +27,7 @@ class Calcitron:
         self.activation_function = activation_function
         self.bias = bias
         self.supervisor = supervisor
+        self.w_init = w_init
         self.N = None
 
     def to_pandas(self):
@@ -185,7 +186,7 @@ class Calcitron:
             return min_weight + np.random.random(self.N) * (max_weight - min_weight) #initializes weights to uniform betwee max and min weight
         elif isinstance(w_init, (float, int)):
             return np.ones(self.N) * w_init
-    def train(self, X, w_init = 'middle', momentum = False):
+    def train(self, X, momentum = False):
         X = np.squeeze(np.atleast_2d(X))
         P = X.shape[0]
         self.momentum = momentum
@@ -201,11 +202,12 @@ class Calcitron:
         self.C_BAP = np.empty(history_size)
         self.C_SPRV = np.empty(history_size)
         self.C_glob = np.empty(P)
-        self.weights = self.initialize_weights(w_init = w_init)
+        self.weights = self.initialize_weights(w_init = self.w_init)
         self.weight_history = np.zeros(history_size)
         self.Z = np.empty(P)
         self.error_history = []
         self.bias_history = np.empty(P)
+
         for i in range(P):
             self.weight_history[i,:] = self.weights
             self.y_hat_binary[i] = self.calculate_output(X[i])[1]

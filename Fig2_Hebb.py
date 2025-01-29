@@ -14,8 +14,11 @@ import param_helpers
 bias = -1.8
 N = 10
 P = 50
-prob = 0.35
+prob = 0.4
+k = int(N*prob)
 eta = 0.1
+seed = 99
+rng = np.random.default_rng(seed)
 
 hebb_regions = [Region('N', (-np.inf, 0.5), 0, 0),
                   Region('D', (0.5, 0.8), 0, eta),
@@ -29,9 +32,12 @@ titles = ['Fire together wire together',
           'Fire together lose your link & \nOut of sync wire together']
 all_rules = [PR(hebb_regions), PR(hebb_regions), PR(hebb_regions), PR(anti_hebb_regions)]
 all_coeffs = [[0.4,0,0.45,0], [0.55,0,0.7,0], [0.4,0,0.3,0], [0.55,0,0.6,0]]
-calcitrons = [Calcitron(coeffs, rule, bias = bias) for rule, coeffs in zip(all_rules, all_coeffs)]
+w_init = (bias / k * np.ones(N)) + rng.standard_normal(N)
+calcitrons = [Calcitron(coeffs, rule, bias = bias, w_init = w_init) for rule, coeffs in zip(all_rules, all_coeffs)]
 
-local_inputs = np.array(np.random.rand(P,N) <= prob, dtype = int)
+# Generate the random local inputs using the seeded random number generator
+local_inputs = np.array(rng.random((P, N)) <= prob, dtype=int)
+# Create the list of all local inputs
 all_local_inputs = [local_inputs for i in range(4)]
 
 x_barplot = ["pre", "post", "both"]

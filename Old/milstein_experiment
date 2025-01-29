@@ -1,0 +1,133 @@
+import numpy as np
+from matplotlib import pyplot as plt
+from Calcitron import Calcitron
+import Calcitron_functions as cf
+from scipy.linalg import circulant
+
+def get_bound(mat_to_plot):
+    return max([abs(np.amin(mat_to_plot)), abs(np.amax(mat_to_plot))])
+theta_p = cf.theta_p
+theta_d = cf.theta_d
+
+track_length = 10
+num_laps = 6
+P = track_length*num_laps
+id_matrices = [np.identity(track_length) for i in range(num_laps)]
+x_milstein = np.vstack(id_matrices)
+z_milstein = np.zeros(P)
+z = 0.1
+loc1 = 0
+loc2 = 2
+z_milstein[track_length+loc1] = z
+z_milstein[track_length*3+loc2] = z
+prep = [np.e**(-(x**2)/2.01) for x in range(int(-track_length/2), int(track_length/2))]
+prep = np.roll(prep, int(track_length/2))
+x_milstein_circulant = circulant(prep)
+x_milstein_circulant = [x_milstein_circulant for i in range(num_laps)]
+x_milstein_circulant = np.vstack(x_milstein_circulant)
+
+#plt.imshow(x_milstein_circulant)
+#epsilon = 0.009
+#epsilon_alpha = 0.2
+#increasing epsilon_alpha gives more clearance
+#alpha and delta - inversely related
+weights_0 = 1
+#alpha = theta_p-theta_d + epsilon_alpha
+#delta = (theta_p - (alpha * weights_0) + epsilon)/z
+epsilon = 0.08
+max_calcium = theta_p + epsilon
+#alpha_ratio = 0.25
+#alpha = alpha_ratio * max_calcium
+#delta = ((1-alpha_ratio) * max_calcium)/z
+alpha = 0.7
+delta = 0.9/z
+
+(delta*z < theta_d)
+#assert delta*z < theta_d
+beta = 0
+gamma = 0
+
+calc1 = Calcitron(alpha, beta, gamma, delta, track_length, b = -6.45)
+calc1.weights = weights_0 * np.ones(track_length)
+calc1.train(x_milstein_circulant,z_milstein, protocol = 0, eta = 0.4, theta_p = theta_p, theta_d =theta_d,
+            decay = 0.25, hard_threshold = 1, k_p = 1)
+#shouval1 parameters: Calcitron(1, 0, 0, 1.1, track_length), radius = 9, weights=1,synape= 68, eta = 0.25
+#toviah_rule: Calcitron(1.5, 0, 0, 1.4, track_length), radius = 4,weights=0.5, synapse = 67, eta = 1
+#parameters for spike - b=-4,Calcitron(0.2, 0, 0, 0.7, track_length), radius = 4, weights = 1,eta = 0.25, prot = 0, decay = 0
+#toviah_rule - epsilon = 0.02, epsilon_alpha = 0.5, weights = 0.5, eta = 1, radius= 5, theta p = 1, theta d =0.6
+
+
+fig_milstein, sub_graphs = plt.subplots(3,3, figsize = (14,4))
+sub_graphs[0, 0].imshow(x_milstein_circulant.T, cmap="coolwarm", aspect="auto", extent=[0, P, 0, track_length],
+                        origin="lower", vmin= -get_bound(x_milstein_circulant), vmax = get_bound(x_milstein_circulant))
+sub_graphs[0, 0].set_title('X')
+sub_graphs[0, 0].set_ylabel('Syn #')
+sub_graphs[1, 0].plot(z_milstein)
+sub_graphs[1, 0].set_title('Z')
+sub_graphs[1, 0].set_ylabel('Voltage')
+
+sub_graphs[2,0].plot(calc1.y_hat)
+spike_inds = np.where(calc1.y_hat_binary == 1)
+sub_graphs[2,0].scatter(spike_inds, calc1.y_hat[spike_inds], color = 'r')
+sub_graphs[2,0].set_title('Output')
+#sub_graphs[2,0].axhline(-calc1.b, linestyle = "--", color = 'k')
+sub_graphs[2,0].set_ylabel('Voltage')
+# for loc in range(loc1,P,10):
+#     sub_graphs[2,0].axvline(loc, linestyle = "--", color = 'k')
+#sub_graphs[2,0].set_yticks([-calc1.b])
+#sub_graphs[2,0].set_yticklabels(["threshold"])
+
+sub_graphs[0,1].imshow(calc1.C_tot.T, cmap="coolwarm", aspect="auto",
+                       extent=[0, P, 0, track_length], origin="lower",
+                       vmin= -get_bound(calc1.C_tot), vmax = get_bound(calc1.C_tot))
+sub_graphs[0,1].set_title('C total')
+sub_graphs[1,1].imshow(calc1.delta_w.T, cmap="coolwarm", aspect="auto",
+                       extent=[0, P, 0, track_length], origin="lower",
+                       vmin= -get_bound(calc1.delta_w), vmax = get_bound(calc1.delta_w))
+sub_graphs[1,1].set_title(r'$\Delta$' + 'w')
+sub_graphs[2,1].imshow(calc1.weight_history.T, cmap="Reds", aspect="auto",
+                       extent=[0,P, 0, track_length], origin="lower", vmin= np.amin(calc1.weight_history), vmax= np.amax(calc1.weight_history))
+sub_graphs[2,1].set_title('weights')
+
+for i in range(3):
+    sub_graphs[i,1].set_ylabel('Syn #')
+
+#sub_graphs[0,2].plot(calc1.C_glob)
+#sub_graphs[0,2].axhline(theta_p, linestyle = "--", color = 'k')
+#sub_graphs[0,2].axhline(theta_d, linestyle = "--", color = 'k')
+#ub_graphs[0,2].set_yticks([theta_d, theta_p])
+#sub_graphs[0,2].set_yticklabels([r'$\theta_D$', r'$\theta_P$'])
+#sub_graphs[0,2].set_title('C global')
+
+#sub_graphs[1,2].imshow(calc1.C_loc.T, cmap="coolwarm", aspect="auto",
+                       #extent=[0,P, 0, track_length], origin="lower",
+                       #vmin= -get_bound(calc1.C_loc), vmax = get_bound(calc1.C_loc))
+#sub_graphs[1,2].set_title('C local')
+
+synapses_to_plot = [loc1,loc2,7]
+n_syns = len(synapses_to_plot)
+#fig_synapses, ax_synapses = plt.subplots(3, 1)
+for i in range(n_syns):
+    syn = synapses_to_plot[i]
+    sub_graphs[i,2].axhline(theta_p, linestyle ="--", color ='k')
+    sub_graphs[i,2].axhline(theta_d, linestyle ="--", color ='k')
+    sub_graphs[i,2].set_yticks([theta_d, theta_p])
+    sub_graphs[i,2].set_yticklabels([r'$\theta_D$', r'$\theta_P$'])
+    sub_graphs[i,2].plot(calc1.C_glob, color ='b', label = 'global')
+    sub_graphs[i,2].plot(calc1.C_tot[:, syn], color='r', label='total')
+    sub_graphs[i,2].plot(calc1.C_loc[:,syn], color ='g', label = 'local')
+    sub_graphs[i,2].set_ylabel('$\mathregular{[Ca^{2+}]}$')
+    sub_graphs[i,2].set_title(syn)
+    sub_graphs[i, 2].set_ylim(0,1.8)
+
+sub_graphs[2,2].legend(loc= 'upper right', ncol = 3)
+sub_graph_indices = [[0,0], [0,1], [0,2], [1,0],[1,1], [1,2], [2,0],[2,1], [2,2]]
+for [r,c] in sub_graph_indices:
+    sub_graphs[r,c].set_xlabel('Time')
+
+plt.tight_layout()
+
+plt.show()
+
+
+

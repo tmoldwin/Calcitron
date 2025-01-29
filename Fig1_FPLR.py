@@ -23,31 +23,31 @@ FPLR = Plasticity_Rule(regions_FPLR, rule = 'FPLR')
 
 param_helpers.fig_params([Linear, FPLR], ['E-G', 'H-L'], 1)
 
-#plotting
-# mosaic = [['D', 'D', 'E', 'F', 'G'], ['H', 'I', 'J', 'K', 'L']]
-# labels = ['D', 'E', 'F', 'G','H','I','J','K','L','','','','']
-# fig, axes = plt.subplot_mosaic(mosaic, figsize=(8, 3.5), dpi = 300, constrained_layout=True)
-# Linear.dw_line_plot(ax = axes['D'], show_cbar=False)
-# annot_fs = 8
-# axes['D'].text(0.55, -0.08, 'Depression', size = annot_fs)
-# axes['D'].text(1.05, 0.15, 'Potentiation', size = annot_fs)
-# axes['D'].text(0.1, 0.01, 'No change', size=annot_fs)
-#
-# # x_d_fill = np.arange(theta_d, theta_p, 0.01)
-# # x_p_fill = np.arange(theta_p, theta_p*1.5, 0.01)
-# # axes['D'].fill_between(x_d_fill, y2 = eta_dict_lin["D"] * np.ones_like(x_d_fill), y1 = np.zeros_like(x_d_fill), color = 'b')
-# # axes['D'].fill_between(x_p_fill, y2 = eta_dict_lin["P"] * np.ones_like(x_p_fill), y1 = np.zeros_like(x_p_fill), color = 'r')
-#
-# Linear.dw_imshow(ax = axes['E'])
-# Linear.Ca_stim_plot(ax = axes['F'])
-# Linear.canonical_weight_change_from_Ca(ax = axes['G'])
-#
-# FPLR.fp_and_eta_plot(ax = axes['H'])
-# FPLR.dw_line_plot(ax = axes['I'])
-# FPLR.dw_imshow(ax = axes['J'])
-# Linear.Ca_stim_plot(ax = axes['K'])
-# FPLR.canonical_weight_change_from_Ca(ax = axes['L'])
-# ph.label_panels_mosaic(fig, axes, size = 14)
+# plotting
+mosaic = [['D', 'D', 'E', 'F', 'G'], ['H', 'I', 'J', 'K', 'L']]
+labels = ['D', 'E', 'F', 'G','H','I','J','K','L','','','','']
+fig, axes = plt.subplot_mosaic(mosaic, figsize=(8, 3.5), dpi = 300, constrained_layout=True)
+Linear.dw_line_plot(ax = axes['D'], show_cbar=False)
+annot_fs = 8
+axes['D'].text(0.55, -0.08, 'Depression', size = annot_fs)
+axes['D'].text(1.05, 0.15, 'Potentiation', size = annot_fs)
+axes['D'].text(0.1, 0.01, 'No change', size=annot_fs)
+
+# x_d_fill = np.arange(theta_d, theta_p, 0.01)
+# x_p_fill = np.arange(theta_p, theta_p*1.5, 0.01)
+# axes['D'].fill_between(x_d_fill, y2 = eta_dict_lin["D"] * np.ones_like(x_d_fill), y1 = np.zeros_like(x_d_fill), color = 'b')
+# axes['D'].fill_between(x_p_fill, y2 = eta_dict_lin["P"] * np.ones_like(x_p_fill), y1 = np.zeros_like(x_p_fill), color = 'r')
+
+Linear.dw_imshow(ax = axes['E'])
+Linear.Ca_stim_plot(ax = axes['F'])
+Linear.canonical_weight_change_from_Ca(ax = axes['G'])
+
+FPLR.fp_and_eta_plot(ax = axes['H'])
+FPLR.dw_line_plot(ax = axes['I'])
+FPLR.dw_imshow(ax = axes['J'])
+Linear.Ca_stim_plot(ax = axes['K'])
+FPLR.canonical_weight_change_from_Ca(ax = axes['L'])
+ph.label_panels_mosaic(fig, axes, size = 14)
 # plt.tight_layout()
-# #plt.savefig(constants.PLOT_FOLDER + '1.svg', dpi = fig.dpi)
-# plt.show()
+plt.savefig(constants.PLOT_FOLDER + '1.svg', dpi = fig.dpi)
+plt.show()

@@ -48,13 +48,14 @@ max_target = 3
 all_supervisors = [cs.homeostatic_supervisorPD(min_target=min_target, max_target = max_target, Z_p = ZPs[i], Z_d=ZDs[i]) for i in range(4)]
 N = 20
 P = 50
+seed = 50
 
 #patterns_targeted = [pg.pattern_gen(N, 1, density) for density in [0.15,0.8]]
 evens = np.array([1 if number % 2 == 0 else 0 for number in range(N)])
 odds = 1 - evens
 patterns_targeted = [evens, odds]
 weights_targeted = 0.05 * evens + 0.4 * odds
-pattern_nums, inputs_targeted = pg.pattern_mixer(patterns_targeted, 80)
+pattern_nums, inputs_targeted = pg.pattern_mixer(patterns_targeted, 80, seed = seed)
 inputs_global = np.vstack((pg.pattern_gen(N, int(P/2), 0.15) ,pg.pattern_gen(N, int(P/2), 0.5)))
 (inputs_global)
 local_inputs = [inputs_targeted, inputs_targeted, inputs_targeted, inputs_targeted]
@@ -89,7 +90,7 @@ for ax in bar_subplots:
     xtick_labels[0].set_ha('right')
     ax.set_xticklabels(xtick_labels)
 
-fig.axes[0].legend(bbox_to_anchor = (-0.1, 1.1))
+fig.axes[0].legend(bbox_to_anchor = (-0.18, 1.5))
 
 # pattern_labels = 'E'
 # for ax in np.array(results_subplots).ravel():

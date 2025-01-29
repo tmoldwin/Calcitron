@@ -69,8 +69,8 @@ plot_dict = ["x", "weights", "output", "C_total", "Ca_bar_codes"]
 rng = np.random.default_rng(seed)
 w_init = (-bias / k * np.ones(N)) + rng.standard_normal(N)
 hetero_calc = Calcitron([alpha, beta, 0, 0], rule, supervisor = supervisors.signal_noise_supervisor(signal),
-                        bias = bias)
-hetero_calc.train(local_inputs, w_init=w_init)
+                        bias = bias, w_init=w_init)
+hetero_calc.train(local_inputs)
 
 ph.share_axes(list(results_axes.values()), 'both', 'False')
 hetero_calc.all_plots(axes=results_axes)

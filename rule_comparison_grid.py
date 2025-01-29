@@ -22,7 +22,8 @@ def rule_comparison_grid(calcitrons, rule_names, all_bar_mats, bar_names, all_in
                          plot_cbar=[], show_supervisor=0, w_init='middle', figsize = None):
     num_rules = len(calcitrons)
     for i,calc in enumerate(calcitrons):
-        calc.train(all_inputs[i], w_init=w_init)
+        calc.w_init = w_init
+        calc.train(all_inputs[i])
     max_calcium = max([np.max(calc.C_tot) for calc in calcitrons])
     all_rules = [calcitron.plasticity_rule for calcitron in calcitrons]
     all_coeffs = [calcitron.coeffs for calcitron in calcitrons]

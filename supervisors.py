@@ -81,7 +81,7 @@ class one_shot_flip_flop_supervisor(Supervisor):
         return self.y[pattern_index], label
 
 class target_perceptron_supervisor(Supervisor):
-    def __init__(self, Zp = 0.3, X = None, y = None, eta_b = 0.1):
+    def __init__(self, Zp = 0.3, X = None, y = None, eta_b = 0):
         super().__init__()
         self.eta_b = eta_b
         self.Z_p = Zp
@@ -106,7 +106,7 @@ class target_perceptron_supervisor(Supervisor):
         return self.eta_b*(self.label_map[tuple(pattern)]-y_hat_binary)
 
 class critic_perceptron_supervisor(Supervisor):
-    def __init__(self, Z_d = 0.2, Z_p = 0.5, X = None, y = None, eta_b=0.1):
+    def __init__(self, Z_d = 0.2, Z_p = 0.5, X = None, y = None, eta_b=0):
         super().__init__()
         self.Z_d = Z_d
         self.Z_p = Z_p

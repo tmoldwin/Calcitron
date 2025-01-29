@@ -284,12 +284,12 @@ class Plasticity_Rule:
     def canonical_weight_change_from_Ca(self, ax=None):
         if ax == None:
             fig, ax = plt.subplots(1, 1)
-        Ca = np.vstack((self.canonical_step_stim(), self.canonical_step_stim()))
+        Ca = self.canonical_step_stim()
         if self.rule == 'FPLR':
-            w0 = [self.region_dict["P"].fp, self.region_dict["D"].fp, self.region_dict["N"].fp, self.region_dict["N"].fp]
+            w0 = [self.region_dict["N"].fp, self.region_dict["N"].fp]
         elif self.rule == 'linear':
-            w0 = [1, 0, 0.5, 0.5]
-        self.weight_change_plot_from_Ca(Ca, w0, ['b', 'r', 'b', 'r'], ['k', 'b', 'r'], ['-', '-', '--', '--'], ax)
+            w0 = [0.5, 0.5]
+        self.weight_change_plot_from_Ca(Ca, w0, ['b', 'r'], ['k', 'b', 'r'], ['-', '-'], ax)
         ax.set_xticks([canonical_delay_dur, canonical_delay_dur + canonical_stim_dur], labels=['S', 'E'])
 
     def bar_code_imshow(self, C, ax=None, plot_cbar = 1):
