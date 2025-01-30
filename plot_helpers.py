@@ -33,13 +33,17 @@ def share_axes(subplot_array, sharex, sharey, delete_row_ticklabels = 1, delete_
         for j in range(shape[1]):
             ax = subplot_array[i,j]
             if sharex in ('rows', 'both'):
-                ax.get_shared_x_axes().join(ax, subplot_array[-1,j])
+                if not ax.get_shared_x_axes().joined(ax, subplot_array[-1,j]):
+                    ax.get_shared_x_axes().joined(ax, subplot_array[-1,j])
             if sharey in ('rows', 'both'):
-                ax.get_shared_y_axes().join(ax, subplot_array[-1,j])
+                if not ax.get_shared_y_axes().joined(ax, subplot_array[-1,j]):
+                    ax.get_shared_y_axes().joined(ax, subplot_array[-1,j])
             if sharex in ('cols', 'both'):
-                ax.get_shared_x_axes().join(ax, subplot_array[i,0])
+                if not ax.get_shared_x_axes().joined(ax, subplot_array[i,0]):
+                    ax.get_shared_x_axes().joined(ax, subplot_array[i,0])
             if sharey in ('cols', 'both'):
-                ax.get_shared_y_axes().join(ax, subplot_array[i, 0])
+                if not ax.get_shared_y_axes().joined(ax, subplot_array[i,0]):
+                    ax.get_shared_y_axes().joined(ax, subplot_array[i,0])
             if delete_col_ticklabels and not(j==0):
                 ax.set_yticklabels([])
             if delete_row_ticklabels and not (i == shape[0] - 1):

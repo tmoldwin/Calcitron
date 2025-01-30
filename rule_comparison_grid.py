@@ -29,7 +29,7 @@ def rule_comparison_grid(calcitrons, rule_names, all_bar_mats, bar_names, all_in
     all_coeffs = [calcitron.coeffs for calcitron in calcitrons]
     num_rows = 6 + int(show_supervisor)  # if there's a supervior, add another row
     if not figsize is None:
-        fig = plt.figure(constrained_layout=True, figsize=figsize, dpi = 300)
+        fig = plt.figure(constrained_layout=True, figsize=figsize)
     else:
         fig = plt.figure(constrained_layout=True, figsize=(8, (num_rows * 1.5)), dpi = 300)
     fig_gs = GridSpec(num_rows, num_rules + 1, figure=fig,

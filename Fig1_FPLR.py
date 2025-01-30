@@ -26,7 +26,7 @@ param_helpers.fig_params([Linear, FPLR], ['E-G', 'H-L'], 1)
 # plotting
 mosaic = [['D', 'D', 'E', 'F', 'G'], ['H', 'I', 'J', 'K', 'L']]
 labels = ['D', 'E', 'F', 'G','H','I','J','K','L','','','','']
-fig, axes = plt.subplot_mosaic(mosaic, figsize=(8, 3.5), dpi = 300, constrained_layout=True)
+fig, axes = plt.subplot_mosaic(mosaic, figsize=(8, 3.5), constrained_layout=True)
 Linear.dw_line_plot(ax = axes['D'], show_cbar=False)
 annot_fs = 8
 axes['D'].text(0.55, -0.08, 'Depression', size = annot_fs)
@@ -50,4 +50,4 @@ FPLR.canonical_weight_change_from_Ca(ax = axes['L'])
 ph.label_panels_mosaic(fig, axes, size = 14)
 # plt.tight_layout()
 plt.savefig(constants.PLOT_FOLDER + '1.svg', dpi = fig.dpi)
-plt.show()
+plt.show(block = True)

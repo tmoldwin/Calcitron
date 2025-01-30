@@ -1,7 +1,7 @@
 import collections
 import numpy as np
-import matplotlib as mpl
 import six
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
 from matplotlib.gridspec import GridSpec
@@ -79,7 +79,7 @@ class Calcitron:
         if plot_cbar != 0:
             cbar = plt.colorbar(im)
             cbar.set_ticks([0.25,0.75], labels = [0,1])
-            cbar.set_label('$\mathregular{x}$')
+            cbar.set_label(r'$\mathregular{x}$')
 
     def bar_code_imshow(self, ax = None, plot_cbar = 1):
         Ca = self.C_tot.T
@@ -116,7 +116,7 @@ class Calcitron:
         ax.set_ylabel(r'$\bf{Weights}$' +'\nsyn #')
         if plot_cbar != 0:
             cbar = plt.colorbar(im)
-            cbar.set_label('$\mathregular{w}$')
+            cbar.set_label(r'$\mathregular{w}$')
         return im
 
     def output_stem(self, ax = None):
@@ -140,7 +140,7 @@ class Calcitron:
             ax.axhline(self.supervisor.min_target, color="k", linestyle=":")
             ax.axhline(self.supervisor.max_target, color="k", linestyle=":")
         ax.set_ylim(0.8 * min(V), 1.5 * max(V))
-        ax.set_ylabel(r'$\bf{Output}$' + '\n$\sum_{i} w_ix_i$')
+        ax.set_ylabel(r'$\bf{Output}$' + r'\n$\sum_{i} w_ix_i$')
 
     def Z_stem(self, ax = None):
         if ax is None:

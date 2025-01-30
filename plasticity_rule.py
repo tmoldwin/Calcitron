@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.colors import SymLogNorm, ListedColormap
 import constants
@@ -192,10 +191,10 @@ class Plasticity_Rule:
         FP_line = [self.fp_from_C(c) for c in C]
         eta_line = [self.eta_from_C(c) for c in C]
         ax.plot(C, FP_line, color="k", linewidth=4, label="F.P.")
-        ax.set_xlabel('$\mathregular{[Ca^{2+}]}$')
+        ax.set_xlabel(r'$\mathrm{[Ca^{2+}]}$')
         ax.set_ylabel('F(Ca(t))')
         ax.set_yticks(list(self.fps))
-        ax.set_xlabel('$\mathregular{[Ca^{2+}]}$')
+        ax.set_xlabel(r'$\mathrm{[Ca^{2+}]}$')
         ax.set_title(title)
         ax.set_xticks(self.thetas)
         ax.set_xticklabels(self.theta_names)
@@ -228,13 +227,13 @@ class Plasticity_Rule:
             ax.plot(C_range, dw_mat[n], color=color)
         ax.set_xticks(self.thetas)
         ax.set_xticklabels(self.theta_names)
-        ax.set_xlabel('$\mathregular{[Ca^{2+}]}$')
-        ax.set_ylabel('$\mathregular{{\Delta}w}$')
+        ax.set_xlabel(r'$\mathrm{[Ca^{2+}]}$')
+        ax.set_ylabel(r'$\mathrm{{\Delta}w}$')
         if show_cbar:
             # norm = mpl.theta_colors.Normalize(vmin=w_range.min(), vmax=w_range.max())
             cmap = mpl.cm.ScalarMappable(cmap=mpl.cm.Wistia)
             cbar = plt.colorbar(cmap, ax=ax)
-            cbar.set_label('$\mathregular{w}$')
+            cbar.set_label(r'$\mathrm{w}$')
 
     def canonical_step_stim(self, eps=0.2):
         return [calcium_step(theta + eps) for theta in self.thetas]
@@ -257,7 +256,7 @@ class Plasticity_Rule:
             ax.axhline(theta, color=theta_colors[i], linestyle=':', linewidth=1)
         ax.set_yticks(self.thetas, labels=self.theta_names)
         ax.set_ylabel('Time')
-        ax.set_ylabel('$\mathregular{[Ca^{2+}]}$')
+        ax.set_ylabel(r'$\mathrm{[Ca^{2+}]}$')
         ax.set_xlabel('Time')
         if cannonical:
             ax.set_xticks([canonical_delay_dur, canonical_delay_dur + canonical_stim_dur], labels=['S', 'E'])
@@ -274,7 +273,7 @@ class Plasticity_Rule:
         for i, fp in enumerate(self.fps):
             ax.axhline(fp, color=fp_colors[i], linestyle=':', linewidth=1)
         # ax.set_yticks(self.fp_dict.values)
-        ax.set_ylabel('$\mathregular{w}$')
+        ax.set_ylabel(r'$\mathrm{w}$')
         ax.set_xlabel('Time')
 
     def weight_change_plot_from_Ca(self, Ca, w0, line_colors, fp_colors, line_styles, ax=None):
@@ -319,10 +318,10 @@ class Plasticity_Rule:
             phase_plane(dw_mat, C_range, w_range, ax=ax)
         ax.set_xticks(self.thetas)
         ax.set_xticklabels(self.theta_names)
-        ax.set_ylabel('$\mathregular{w}$')
-        ax.set_xlabel('$\mathregular{[Ca^{2+}]}$')
+        ax.set_ylabel(r'$\mathrm{w}$')
+        ax.set_xlabel(r'$\mathrm{[Ca^{2+}]}$')
         cbar = plt.colorbar(im)
-        cbar.set_label('$\mathregular{{\Delta}w}$')
+        cbar.set_label(r'$\mathrm{{\Delta}w}$')
         return im
 
 
