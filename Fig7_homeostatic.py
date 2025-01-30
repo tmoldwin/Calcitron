@@ -51,7 +51,7 @@ P = 50
 seed = 50
 
 #patterns_targeted = [pg.pattern_gen(N, 1, density) for density in [0.15,0.8]]
-evens = np.array([1 if number % 2 == 0 else 0 for number in range(N)])
+evens = np.array([1 if number % 2 == 0 else 0 for number in range(1, N+1)])
 odds = 1 - evens
 patterns_targeted = [evens, odds]
 weights_targeted = 0.05 * evens + 0.4 * odds

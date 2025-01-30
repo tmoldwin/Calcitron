@@ -16,11 +16,8 @@ plt.rc('legend', fontsize=MEDIUM_SIZE)  # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 PLOT_FOLDER = 'Calc_Plots/'
-calcitron_directory = 'C:/Code/Calcitron1'
-# PAPER_PLOT_FOLDER = os.path.join(dropbox_directory, 'Calcitron_Paper/', 'Figures/', 'FinalTIFFs/')
+PAPER_PLOT_FOLDER = 'Figures//FinalTIFFs//'
 
-# Ensure the directory exists
-# if not os.path.exists(PAPER_PLOT_FOLDER):
-#     os.makedirs(PAPER_PLOT_FOLDER)
+
 DATA_FOLDER = 'Data/'
 PARAMS_FOLDER = 'Params/'
