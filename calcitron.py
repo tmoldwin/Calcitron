@@ -140,7 +140,7 @@ class Calcitron:
             ax.axhline(self.supervisor.min_target, color="k", linestyle=":")
             ax.axhline(self.supervisor.max_target, color="k", linestyle=":")
         ax.set_ylim(0.8 * min(V), 1.5 * max(V))
-        ax.set_ylabel(r'$\bf{Output}$' + r'\n$\sum_{i} w_ix_i$')
+        ax.set_ylabel(r'$\bf{Output}$' + '\n' + r'$\sum_{i} w_ix_i$')
 
     def Z_stem(self, ax = None):
         if ax is None:

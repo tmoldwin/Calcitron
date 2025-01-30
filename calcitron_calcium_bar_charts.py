@@ -49,7 +49,7 @@ def calcium_barplot(binary_mat, coeffs, rule, x_labels, used_coeff_inds = [0, 1,
     ax.set_yticks(rule.thetas)
     ax.set_yticklabels(labels = rule.theta_names)
     ax.tick_params(axis = 'x', rotation=rotation)
-    ax.set_ylabel('$\mathregular{C^i_{total}}$')
+    ax.set_ylabel(r'$\mathregular{C^i_{total}}$')
     if set_ylim:
         ax.set_ylim(0, 1.2 * np.max(np.hstack((bottom, rule.thetas))))
     for i in range(len(x_labels)):
