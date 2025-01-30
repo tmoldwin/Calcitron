@@ -31,7 +31,7 @@ def rule_comparison_grid(calcitrons, rule_names, all_bar_mats, bar_names, all_in
     if not figsize is None:
         fig = plt.figure(constrained_layout=True, figsize=figsize)
     else:
-        fig = plt.figure(constrained_layout=True, figsize=(8, (num_rows * 1.5)), dpi = 300)
+        fig = plt.figure(constrained_layout=True, figsize=(8, (num_rows * 1.5)))
     fig_gs = GridSpec(num_rows, num_rules + 1, figure=fig,
                       height_ratios=[2] + list(np.ones(num_rows - 1)),
                       width_ratios=list(np.ones(num_rules)) + [0.01])
