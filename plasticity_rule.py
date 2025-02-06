@@ -292,14 +292,14 @@ class Plasticity_Rule:
         self.weight_change_plot_from_Ca(Ca, w0, ['b', 'r'], ['k', 'b', 'r'], ['-', '-'], ax)
         ax.set_xticks([canonical_delay_dur, canonical_delay_dur + canonical_stim_dur], labels=['S', 'E'])
 
-    def bar_code_imshow(self, C, ax=None, plot_cbar = 1):
+    def bar_code_imshow(self, C, ax=None, plot_cbar=1):
         if ax is None:
             fig, ax = plt.subplots(1, 1)
         bar_codes = self.bar_code_from_C(np.array(C))
-        im = ax.imshow(bar_codes, aspect='auto', cmap=ListedColormap(self.bar_code_colors), origin='lower', vmin=0,
-                       vmax=len(self.bar_code_colors))
+        im = ax.imshow(bar_codes, aspect='auto', cmap=ListedColormap(self.bar_code_colors), 
+                       origin='lower', vmin=0, vmax=len(self.bar_code_colors), interpolation='none')
         ax.set_ylabel(r'$\bf{Plasticity}$' + '\nsyn #')
-        if plot_cbar!=0:
+        if plot_cbar != 0:
             cbar = plt.colorbar(im)
             cbar.set_label('Plasticity')
             cbar.set_ticks(np.arange(len(self.bar_code_colors)) + 0.5, labels=self.region_names)

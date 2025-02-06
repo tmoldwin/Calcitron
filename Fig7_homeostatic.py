@@ -9,6 +9,7 @@ import plasticity_rule as PR
 from plasticity_rule import Region
 import rule_comparison_grid as rcg
 import plot_helpers as ph
+from matplotlib.colors import ListedColormap
 
 plt.rc('legend', fontsize=8)
 plt.rc('xtick', labelsize=8)  # fontsize of the tick labels
@@ -48,13 +49,13 @@ max_target = 3
 all_supervisors = [cs.homeostatic_supervisorPD(min_target=min_target, max_target = max_target, Z_p = ZPs[i], Z_d=ZDs[i]) for i in range(4)]
 N = 20
 P = 50
-seed = 50
+seed = 999
 
 #patterns_targeted = [pg.pattern_gen(N, 1, density) for density in [0.15,0.8]]
 evens = np.array([1 if number % 2 == 0 else 0 for number in range(1, N+1)])
 odds = 1 - evens
 patterns_targeted = [evens, odds]
-weights_targeted = 0.05 * evens + 0.4 * odds
+weights_targeted = 0.01 * evens + 0.4 * odds
 pattern_nums, inputs_targeted = pg.pattern_mixer(patterns_targeted, 80, seed = seed)
 inputs_global = np.vstack((pg.pattern_gen(N, int(P/2), 0.15) ,pg.pattern_gen(N, int(P/2), 0.5)))
 (inputs_global)
@@ -72,7 +73,7 @@ bar_names = [[(r"$\hat{y}=$" if i == 0 else "")
               + (r"$\mathregular{x_{i}}$=" if i == 0 else "")
               + (f"{input_bars[i]}\n")
               + ("Z=" if i == 0 else "")
-              +(f"{np.round(all_Zs[j][i],2)}")
+              + (f"{str(float(np.round(all_Zs[j][i],2))).replace('0.', '.') if float(np.round(all_Zs[j][i],2)) != 0 else '0'}")
               for i in range(6)] for j in range(num_rules)]
 calcitrons = [Calcitron(all_coeffs[i],
                         rules[i],
